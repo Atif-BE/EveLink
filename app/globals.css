@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --eve-void: #030408;
+  --eve-deep: #0a0e14;
+  --eve-cyan: #00d4ff;
+  --eve-cyan-dim: #00a8cc;
+  --eve-amber: #ff9f1c;
+  --eve-amber-dim: #cc7f16;
+  --eve-purple: #8b5cf6;
+  --eve-purple-dim: #6d42c9;
+  --eve-red: #ef4444;
+  --eve-green: #22c55e;
+  --eve-text-primary: #f1f5f9;
+  --eve-text-secondary: #94a3b8;
+  --eve-text-muted: #64748b;
+  --eve-border: rgba(148, 163, 184, 0.15);
+  --eve-glow-cyan: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.15);
+  --eve-glow-amber: 0 0 20px rgba(255, 159, 28, 0.3), 0 0 40px rgba(255, 159, 28, 0.15);
+  --eve-glow-purple: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.15);
+
+  --background: var(--eve-void);
+  --foreground: var(--eve-text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-eve-void: var(--eve-void);
+  --color-eve-deep: var(--eve-deep);
+  --color-eve-cyan: var(--eve-cyan);
+  --color-eve-cyan-dim: var(--eve-cyan-dim);
+  --color-eve-amber: var(--eve-amber);
+  --color-eve-amber-dim: var(--eve-amber-dim);
+  --color-eve-purple: var(--eve-purple);
+  --color-eve-purple-dim: var(--eve-purple-dim);
+  --color-eve-red: var(--eve-red);
+  --color-eve-green: var(--eve-green);
+  --color-eve-text-primary: var(--eve-text-primary);
+  --color-eve-text-secondary: var(--eve-text-secondary);
+  --color-eve-text-muted: var(--eve-text-muted);
+  --color-eve-border: var(--eve-border);
+  --font-display: var(--font-orbitron);
+  --font-body: var(--font-rajdhani);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--eve-void);
+  color: var(--eve-text-primary);
+  font-family: var(--font-rajdhani), system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: var(--eve-text-primary);
+}
+
+@keyframes gradient-rotate {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.font-display {
+  font-family: var(--font-orbitron), system-ui, sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-rajdhani), system-ui, sans-serif;
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.text-glow-amber {
+  text-shadow: 0 0 10px rgba(255, 159, 28, 0.5), 0 0 20px rgba(255, 159, 28, 0.3);
+}
+
+.box-glow-cyan {
+  box-shadow: var(--eve-glow-cyan);
+}
+
+.box-glow-amber {
+  box-shadow: var(--eve-glow-amber);
+}
+
+.box-glow-purple {
+  box-shadow: var(--eve-glow-purple);
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animate-gradient-border {
+  animation: gradient-rotate 8s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
