@@ -26,7 +26,7 @@ export const LoginCard = ({
   const handleLogin = async () => {
     setIsLoading(true)
     try {
-      await onLogin?.()
+      onLogin?.()
     } finally {
       setIsLoading(false)
     }
@@ -40,7 +40,7 @@ export const LoginCard = ({
       className={cn("relative w-full max-w-md", className)}
     >
       <div
-        className="absolute -inset-[1px] rounded-xl opacity-75"
+        className="absolute -inset-px rounded-xl opacity-75"
         style={{
           background: `linear-gradient(var(--gradient-angle, 0deg), var(--eve-cyan), var(--eve-purple), var(--eve-cyan))`,
           animation: "gradient-rotate 8s linear infinite",
@@ -72,7 +72,7 @@ export const LoginCard = ({
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start gap-3 rounded-lg border border-eve-red/30 bg-eve-red/10 p-4"
             >
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-eve-red" />
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-eve-red" />
               <div className="flex-1">
                 <p className="font-body text-sm text-eve-red">{error}</p>
                 {onRetry && (
@@ -108,14 +108,14 @@ export const LoginCard = ({
 
           <motion.div variants={fadeInUp} className="pt-4">
             <div className="flex items-center justify-center gap-3">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-eve-border to-transparent" />
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-eve-border to-transparent" />
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 animate-pulse-glow rounded-full bg-eve-green" />
                 <span className="font-body text-xs text-eve-text-muted">
                   Systems Online
                 </span>
               </div>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-eve-border to-transparent" />
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-eve-border to-transparent" />
             </div>
           </motion.div>
         </motion.div>
