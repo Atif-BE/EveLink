@@ -7,6 +7,8 @@ import type {
   BloodlineInfo,
   AncestryInfo,
 } from "@/types/esi"
+import { getCharactersByUserId } from "@/db/queries"
+import { getValidAccessToken } from "@/lib/tokens"
 
 export type {
   CharacterInfo,
@@ -17,6 +19,18 @@ export type {
   BloodlineInfo,
   AncestryInfo,
 } from "@/types/esi"
+
+export type CharacterWealth = {
+  characterId: number
+  characterName: string
+  balance: number | null
+}
+
+export type AggregateWealth = {
+  total: number
+  characters: CharacterWealth[]
+  incomplete: boolean
+}
 
 const ESI_BASE = "https://esi.evetech.net/latest"
 const USER_AGENT = `EveLink/0.1.0 (${process.env.EVE_CONTACT_EMAIL || "contact@example.com"})`
@@ -117,4 +131,79 @@ export async function getAncestryById(
 ): Promise<AncestryInfo | undefined> {
   const ancestries = await getAncestries()
   return ancestries.find((a) => a.id === ancestryId)
+}
+
+async function fetchESIAuth<T>(
+  endpoint: string,
+  accessToken: string
+): Promise<T> {
+  const response = await fetch(`${ESI_BASE}${endpoint}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      "X-User-Agent": USER_AGENT,
+    },
+  })
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`ESI request failed: ${error}`)
+  }
+
+  return response.json()
+}
+
+export async function getCharacterWallet(
+  characterId: number,
+  accessToken: string
+): Promise<number> {
+  return fetchESIAuth<number>(
+    `/characters/${characterId}/wallet/`,
+    accessToken
+  )
+}
+
+export async function getAggregateWealth(
+  userId: string
+): Promise<AggregateWealth> {
+  const characters = await getCharactersByUserId(userId)
+
+  if (characters.length === 0) {
+    return { total: 0, characters: [], incomplete: false }
+  }
+
+  const results = await Promise.all(
+    characters.map(async (char) => {
+      const token = await getValidAccessToken(char.id)
+
+      if (!token) {
+        return {
+          characterId: char.id,
+          characterName: char.name,
+          balance: null,
+        }
+      }
+
+      try {
+        const balance = await getCharacterWallet(char.id, token)
+        return {
+          characterId: char.id,
+          characterName: char.name,
+          balance,
+        }
+      } catch {
+        return {
+          characterId: char.id,
+          characterName: char.name,
+          balance: null,
+        }
+      }
+    })
+  )
+
+  const validBalances = results.filter((r) => r.balance !== null)
+  const total = validBalances.reduce((sum, r) => sum + (r.balance ?? 0), 0)
+  const incomplete = results.some((r) => r.balance === null)
+
+  return { total, characters: results, incomplete }
 }
