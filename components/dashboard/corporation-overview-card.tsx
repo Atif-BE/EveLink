@@ -21,7 +21,7 @@ export function CorporationOverviewCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-eve-border bg-eve-deep/50 p-4 backdrop-blur",
+        "rounded-xl border border-eve-border bg-eve-deep p-4",
         className
       )}
     >
@@ -52,8 +52,8 @@ export function CorporationOverviewCard({
       <div className="mt-4 grid grid-cols-3 gap-3">
         <div className="rounded-lg bg-eve-void/30 p-3">
           <div className="flex items-center gap-2 text-eve-text-muted">
-            <Users className="h-3.5 w-3.5" />
-            <span className="font-body text-xs">Members</span>
+            <Users className="h-4 w-4" />
+            <span className="font-body text-sm">Members</span>
           </div>
           <p className="mt-1 font-display text-lg font-semibold text-eve-text-primary">
             {memberCount.toLocaleString()}
@@ -62,8 +62,8 @@ export function CorporationOverviewCard({
 
         <div className="rounded-lg bg-eve-void/30 p-3">
           <div className="flex items-center gap-2 text-eve-text-muted">
-            <Percent className="h-3.5 w-3.5" />
-            <span className="font-body text-xs">Tax Rate</span>
+            <Percent className="h-4 w-4" />
+            <span className="font-body text-sm">Tax Rate</span>
           </div>
           <p className="mt-1 font-display text-lg font-semibold text-eve-text-primary">
             {(taxRate * 100).toFixed(0)}%
@@ -72,10 +72,10 @@ export function CorporationOverviewCard({
 
         <div className="rounded-lg bg-eve-void/30 p-3">
           <div className="flex items-center gap-2 text-eve-text-muted">
-            <Crown className="h-3.5 w-3.5" />
-            <span className="font-body text-xs">CEO</span>
+            <Crown className="h-4 w-4" />
+            <span className="font-body text-sm">CEO</span>
           </div>
-          <p className="mt-1 truncate font-display text-sm font-semibold text-eve-text-primary">
+          <p className="mt-1 truncate font-display text-lg font-semibold text-eve-text-primary">
             {ceoName}
           </p>
         </div>

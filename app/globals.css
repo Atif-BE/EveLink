@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --eve-void: #030408;
-  --eve-deep: #0a0e14;
+  --eve-void: #0f172a;
+  --eve-deep: #1e293b;
   --eve-cyan: #00d4ff;
   --eve-cyan-dim: #00a8cc;
   --eve-amber: #ff9f1c;

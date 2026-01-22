@@ -5,12 +5,14 @@ import {
   getCharacterInfo,
   getRaceById,
   getBloodlineById,
+  getAggregateWealth,
 } from "@/lib/esi"
 import { getCharactersByUserId } from "@/db/queries"
 import { CharacterCard } from "@/components/eve/character-card"
 import { AssociatedCharactersPanel } from "@/components/dashboard/associated-characters-panel"
 import { QuickStatsPanel } from "@/components/dashboard/quick-stats-panel"
 import { CorporationOverviewCard } from "@/components/dashboard/corporation-overview-card"
+import { WealthCard } from "@/components/dashboard/wealth-card"
 import { eveImageUrl } from "@/types/eve"
 import type {
   CharacterDisplay,
@@ -21,11 +23,12 @@ import type {
 export default async function DashboardPage() {
   const session = await getSession()
 
-  const [corpInfo, allianceInfo, charInfo, linkedCharacters] = await Promise.all([
+  const [corpInfo, allianceInfo, charInfo, linkedCharacters, wealth] = await Promise.all([
     getCorporationInfo(session.corporationId),
     session.allianceId ? getAllianceInfo(session.allianceId) : null,
     getCharacterInfo(session.characterId),
     session.userId ? getCharactersByUserId(session.userId) : [],
+    session.userId ? getAggregateWealth(session.userId) : { total: 0, characters: [], incomplete: false },
   ])
 
   const [ceoInfo, raceInfo, bloodlineInfo] = await Promise.all([
@@ -68,38 +71,37 @@ export default async function DashboardPage() {
   )
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <div className="lg:col-span-2">
+    <div className="flex gap-6">
+      <div className="flex-1 space-y-6">
         <CharacterCard
           character={character}
           corporation={corporation}
           alliance={alliance}
         />
-      </div>
-
-      <div>
-        <AssociatedCharactersPanel
-          characters={linkedCharsWithCorpNames}
-          activeCharacterId={session.characterId}
-        />
-      </div>
-
-      <div className="lg:col-span-1">
-        <QuickStatsPanel
-          securityStatus={charInfo.security_status ?? 0}
-          birthday={new Date(charInfo.birthday)}
-          raceName={raceInfo?.name ?? "Unknown"}
-          bloodlineName={bloodlineInfo?.name ?? "Unknown"}
-        />
-      </div>
-
-      <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <QuickStatsPanel
+            className="md:col-span-1"
+            securityStatus={charInfo.security_status ?? 0}
+            birthday={new Date(charInfo.birthday)}
+            raceName={raceInfo?.name ?? "Unknown"}
+            bloodlineName={bloodlineInfo?.name ?? "Unknown"}
+          />
+          <WealthCard className="md:col-span-2" wealth={wealth} />
+        </div>
         <CorporationOverviewCard
           corporation={corporation}
           memberCount={corpInfo.member_count}
           taxRate={corpInfo.tax_rate}
           ceoName={ceoInfo.name}
         />
+      </div>
+      <div className="hidden w-64 shrink-0 lg:block">
+        <div className="sticky top-6">
+          <AssociatedCharactersPanel
+            characters={linkedCharsWithCorpNames}
+            activeCharacterId={session.characterId}
+          />
+        </div>
       </div>
     </div>
   )

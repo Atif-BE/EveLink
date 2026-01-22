@@ -1,9 +1,6 @@
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { Starfield } from "@/components/backgrounds/starfield"
-import { NebulaOverlay } from "@/components/backgrounds/nebula-overlay"
-import { Scanlines } from "@/components/backgrounds/scanlines"
 
 export default async function DashboardLayout({
   children,
@@ -18,18 +15,12 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-eve-void">
-      <Starfield />
-      <NebulaOverlay />
-      <Scanlines />
+      <DashboardHeader
+        characterId={session.characterId}
+        characterName={session.characterName}
+      />
 
-      <div className="relative z-20">
-        <DashboardHeader
-          characterId={session.characterId}
-          characterName={session.characterName}
-        />
-
-        <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
-      </div>
+      <main className="mx-auto max-w-[1600px] px-6 py-8">{children}</main>
     </div>
   )
 }

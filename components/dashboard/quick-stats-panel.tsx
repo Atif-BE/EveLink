@@ -43,7 +43,7 @@ export function QuickStatsPanel({
   return (
     <div
       className={cn(
-        "rounded-xl border border-eve-border bg-eve-deep/50 p-4 backdrop-blur",
+        "rounded-xl border border-eve-border bg-eve-deep p-4",
         className
       )}
     >
@@ -53,14 +53,14 @@ export function QuickStatsPanel({
 
       <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-void/50">
-            <Shield className="h-4 w-4 text-eve-text-muted" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
+            <Shield className="h-5 w-5 text-eve-text-muted" />
           </div>
           <div>
-            <p className="font-body text-xs text-eve-text-muted">Security Status</p>
+            <p className="font-body text-sm text-eve-text-muted">Security Status</p>
             <p
               className={cn(
-                "font-display text-sm font-semibold",
+                "font-display text-base font-semibold",
                 getSecurityStatusColor(securityStatus)
               )}
             >
@@ -70,24 +70,24 @@ export function QuickStatsPanel({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-void/50">
-            <Calendar className="h-4 w-4 text-eve-text-muted" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
+            <Calendar className="h-5 w-5 text-eve-text-muted" />
           </div>
           <div>
-            <p className="font-body text-xs text-eve-text-muted">Account Age</p>
-            <p className="font-display text-sm font-semibold text-eve-text-primary">
+            <p className="font-body text-sm text-eve-text-muted">Account Age</p>
+            <p className="font-display text-base font-semibold text-eve-text-primary">
               {formatAccountAge(birthday)}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-void/50">
-            <Dna className="h-4 w-4 text-eve-text-muted" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
+            <Dna className="h-5 w-5 text-eve-text-muted" />
           </div>
           <div>
-            <p className="font-body text-xs text-eve-text-muted">Bloodline</p>
-            <p className="font-display text-sm font-semibold text-eve-text-primary">
+            <p className="font-body text-sm text-eve-text-muted">Bloodline</p>
+            <p className="font-display text-base font-semibold text-eve-text-primary">
               {raceName} / {bloodlineName}
             </p>
           </div>

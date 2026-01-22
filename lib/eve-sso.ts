@@ -16,7 +16,7 @@ export function getAuthorizationUrl(state: string): string {
     response_type: "code",
     redirect_uri: process.env.EVE_CALLBACK_URL!,
     client_id: process.env.EVE_CLIENT_ID!,
-    scope: "publicData",
+    scope: "publicData esi-wallet.read_character_wallet.v1",
     state,
   })
 
