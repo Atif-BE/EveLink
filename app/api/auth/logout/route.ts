@@ -5,7 +5,7 @@ export async function GET() {
   const session = await getSession()
   session.destroy()
 
-  const baseUrl = process.env.EVE_CALLBACK_URL || "http://localhost:3000"
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000"
   return NextResponse.redirect(`${baseUrl}/login`)
 }
 

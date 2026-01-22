@@ -1,24 +1,9 @@
 import * as jose from "jose"
+import type { TokenResponse, JWTPayload } from "@/types/auth"
 
 const EVE_SSO_BASE = "https://login.eveonline.com"
 const EVE_JWKS_URL = "https://login.eveonline.com/oauth/jwks"
-
-type TokenResponse = {
-  access_token: string
-  refresh_token: string
-  expires_in: number
-  token_type: string
-}
-
-type JWTPayload = {
-  sub: string
-  name: string
-  owner: string
-  exp: number
-  iat: number
-  iss: string
-  aud: string[]
-}
+const USER_AGENT = `EveLink/0.1.0 (${process.env.EVE_CONTACT_EMAIL || "contact@example.com"})`
 
 export function generateState(): string {
   const array = new Uint8Array(32)
@@ -51,6 +36,7 @@ export async function exchangeCode(
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${credentials}`,
       Host: "login.eveonline.com",
+      "X-User-Agent": USER_AGENT,
     },
     body: new URLSearchParams({
       grant_type: "authorization_code",
@@ -96,6 +82,7 @@ export async function refreshAccessToken(
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${credentials}`,
       Host: "login.eveonline.com",
+      "X-User-Agent": USER_AGENT,
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",

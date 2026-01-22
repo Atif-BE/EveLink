@@ -1,51 +1,31 @@
+import type {
+  CharacterInfo,
+  CorporationInfo,
+  AllianceInfo,
+  CharacterAffiliation,
+  RaceInfo,
+  BloodlineInfo,
+  AncestryInfo,
+} from "@/types/esi"
+
+export type {
+  CharacterInfo,
+  CorporationInfo,
+  AllianceInfo,
+  CharacterAffiliation,
+  RaceInfo,
+  BloodlineInfo,
+  AncestryInfo,
+} from "@/types/esi"
+
 const ESI_BASE = "https://esi.evetech.net/latest"
-
-type CharacterInfo = {
-  alliance_id?: number
-  birthday: string
-  bloodline_id: number
-  corporation_id: number
-  description?: string
-  gender: string
-  name: string
-  race_id: number
-  security_status?: number
-}
-
-type CorporationInfo = {
-  alliance_id?: number
-  ceo_id: number
-  creator_id: number
-  date_founded?: string
-  description?: string
-  home_station_id?: number
-  member_count: number
-  name: string
-  shares?: number
-  tax_rate: number
-  ticker: string
-  url?: string
-}
-
-type AllianceInfo = {
-  creator_corporation_id: number
-  creator_id: number
-  date_founded: string
-  executor_corporation_id?: number
-  name: string
-  ticker: string
-}
-
-type CharacterAffiliation = {
-  alliance_id?: number
-  character_id: number
-  corporation_id: number
-}
+const USER_AGENT = `EveLink/0.1.0 (${process.env.EVE_CONTACT_EMAIL || "contact@example.com"})`
 
 async function fetchESI<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${ESI_BASE}${endpoint}`, {
     headers: {
       Accept: "application/json",
+      "X-User-Agent": USER_AGENT,
     },
   })
 
@@ -83,6 +63,7 @@ export async function getCharacterAffiliation(
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      "X-User-Agent": USER_AGENT,
     },
     body: JSON.stringify([characterId]),
   })
@@ -94,4 +75,46 @@ export async function getCharacterAffiliation(
 
   const affiliations: CharacterAffiliation[] = await response.json()
   return affiliations[0]
+}
+
+// Cache for static universe data (rarely changes)
+let racesCache: RaceInfo[] | null = null
+let bloodlinesCache: BloodlineInfo[] | null = null
+let ancestriesCache: AncestryInfo[] | null = null
+
+export async function getRaces(): Promise<RaceInfo[]> {
+  if (racesCache) return racesCache
+  racesCache = await fetchESI<RaceInfo[]>("/universe/races/")
+  return racesCache
+}
+
+export async function getBloodlines(): Promise<BloodlineInfo[]> {
+  if (bloodlinesCache) return bloodlinesCache
+  bloodlinesCache = await fetchESI<BloodlineInfo[]>("/universe/bloodlines/")
+  return bloodlinesCache
+}
+
+export async function getAncestries(): Promise<AncestryInfo[]> {
+  if (ancestriesCache) return ancestriesCache
+  ancestriesCache = await fetchESI<AncestryInfo[]>("/universe/ancestries/")
+  return ancestriesCache
+}
+
+export async function getRaceById(raceId: number): Promise<RaceInfo | undefined> {
+  const races = await getRaces()
+  return races.find((r) => r.race_id === raceId)
+}
+
+export async function getBloodlineById(
+  bloodlineId: number
+): Promise<BloodlineInfo | undefined> {
+  const bloodlines = await getBloodlines()
+  return bloodlines.find((b) => b.bloodline_id === bloodlineId)
+}
+
+export async function getAncestryById(
+  ancestryId: number
+): Promise<AncestryInfo | undefined> {
+  const ancestries = await getAncestries()
+  return ancestries.find((a) => a.id === ancestryId)
 }
