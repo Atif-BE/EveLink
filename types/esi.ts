@@ -72,3 +72,39 @@ export type AncestryInfo = {
   short_description: string
   icon_id: number
 }
+
+export type KillmailRef = {
+  killmail_id: number
+  killmail_hash: string
+}
+
+export type KillmailVictim = {
+  character_id?: number
+  corporation_id?: number
+  alliance_id?: number
+  ship_type_id?: number
+  damage_taken: number
+}
+
+export type KillmailAttacker = {
+  character_id?: number
+  corporation_id?: number
+  final_blow: boolean
+  damage_done: number
+  ship_type_id?: number
+}
+
+export type Killmail = {
+  killmail_id: number
+  killmail_time: string
+  victim: KillmailVictim
+  attackers: KillmailAttacker[]
+  solar_system_id: number
+}
+
+export type UniverseType = {
+  type_id: number
+  name: string
+  description: string
+  group_id: number
+}

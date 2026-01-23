@@ -6,6 +6,7 @@ import {
   getRaceById,
   getBloodlineById,
   getAggregateWealth,
+  getAggregateKillmails,
 } from "@/lib/esi"
 import { getCharactersByUserId } from "@/db/queries"
 import { CharacterCard } from "@/components/eve/character-card"
@@ -13,6 +14,7 @@ import { AssociatedCharactersPanel } from "@/components/dashboard/associated-cha
 import { QuickStatsPanel } from "@/components/dashboard/quick-stats-panel"
 import { CorporationOverviewCard } from "@/components/dashboard/corporation-overview-card"
 import { WealthCard } from "@/components/dashboard/wealth-card"
+import { KillmailsPanel } from "@/components/dashboard/killmails-panel"
 import { eveImageUrl } from "@/types/eve"
 import type {
   CharacterDisplay,
@@ -23,12 +25,13 @@ import type {
 export default async function DashboardPage() {
   const session = await getSession()
 
-  const [corpInfo, allianceInfo, charInfo, linkedCharacters, wealth] = await Promise.all([
+  const [corpInfo, allianceInfo, charInfo, linkedCharacters, wealth, killmails] = await Promise.all([
     getCorporationInfo(session.corporationId),
     session.allianceId ? getAllianceInfo(session.allianceId) : null,
     getCharacterInfo(session.characterId),
     session.userId ? getCharactersByUserId(session.userId) : [],
     session.userId ? getAggregateWealth(session.userId) : { total: 0, characters: [], incomplete: false },
+    session.userId ? getAggregateKillmails(session.userId, 5) : { kills: [], losses: [], incomplete: false },
   ])
 
   const [ceoInfo, raceInfo, bloodlineInfo] = await Promise.all([
@@ -93,6 +96,11 @@ export default async function DashboardPage() {
           memberCount={corpInfo.member_count}
           taxRate={corpInfo.tax_rate}
           ceoName={ceoInfo.name}
+        />
+        <KillmailsPanel
+          kills={killmails.kills}
+          losses={killmails.losses}
+          incomplete={killmails.incomplete}
         />
       </div>
       <div className="hidden w-64 shrink-0 lg:block">
