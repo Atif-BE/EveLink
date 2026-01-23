@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm"
+import { eq, and, desc } from "drizzle-orm"
 import { db } from "./index"
-import { users, characters } from "./schema"
-import type { NewUser, NewCharacter } from "@/types/db"
+import { users, characters, doctrines, doctrineShips } from "./schema"
+import type { NewUser, NewCharacter, NewDoctrine, NewDoctrineShip } from "@/types/db"
 
 // User queries
 export async function createUser(data: Partial<NewUser> = {}) {
@@ -84,4 +84,56 @@ export async function deactivateCharacter(characterId: number) {
     .update(characters)
     .set({ isActive: false })
     .where(eq(characters.id, characterId))
+}
+
+export async function getDoctrinesByAllianceId(allianceId: number) {
+  return db.query.doctrines.findMany({
+    where: and(eq(doctrines.allianceId, allianceId), eq(doctrines.isActive, true)),
+    with: { ships: true },
+    orderBy: [desc(doctrines.createdAt)],
+  })
+}
+
+export async function getDoctrineById(id: string) {
+  return db.query.doctrines.findFirst({
+    where: eq(doctrines.id, id),
+    with: { ships: true },
+  })
+}
+
+export async function createDoctrine(data: NewDoctrine) {
+  const [doctrine] = await db.insert(doctrines).values(data).returning()
+  return doctrine
+}
+
+export async function updateDoctrine(
+  id: string,
+  data: Partial<Pick<NewDoctrine, "name" | "description" | "isActive">>
+) {
+  const [doctrine] = await db
+    .update(doctrines)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(doctrines.id, id))
+    .returning()
+  return doctrine
+}
+
+export async function softDeleteDoctrine(id: string) {
+  return updateDoctrine(id, { isActive: false })
+}
+
+export async function addShipToDoctrine(data: NewDoctrineShip) {
+  const [ship] = await db.insert(doctrineShips).values(data).returning()
+  return ship
+}
+
+export async function removeShipFromDoctrine(shipId: string) {
+  await db.delete(doctrineShips).where(eq(doctrineShips.id, shipId))
+}
+
+export async function getShipsByDoctrineId(doctrineId: string) {
+  return db.query.doctrineShips.findMany({
+    where: eq(doctrineShips.doctrineId, doctrineId),
+    orderBy: [desc(doctrineShips.priority), desc(doctrineShips.createdAt)],
+  })
 }

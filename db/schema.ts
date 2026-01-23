@@ -6,6 +6,7 @@ import {
   boolean,
   real,
   uuid,
+  jsonb,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
@@ -55,5 +56,42 @@ export const charactersRelations = relations(characters, ({ one }) => ({
   user: one(users, {
     fields: [characters.userId],
     references: [users.id],
+  }),
+}))
+
+export const doctrines = pgTable("doctrines", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  allianceId: integer("alliance_id").notNull(),
+  createdById: integer("created_by_id").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
+export const doctrineShips = pgTable("doctrine_ships", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  doctrineId: uuid("doctrine_id")
+    .notNull()
+    .references(() => doctrines.id, { onDelete: "cascade" }),
+  shipTypeId: integer("ship_type_id").notNull(),
+  shipName: text("ship_name").notNull(),
+  fitName: text("fit_name").notNull(),
+  role: text("role").notNull(),
+  fitting: jsonb("fitting").notNull(),
+  rawEft: text("raw_eft").notNull(),
+  priority: integer("priority").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export const doctrinesRelations = relations(doctrines, ({ many }) => ({
+  ships: many(doctrineShips),
+}))
+
+export const doctrineShipsRelations = relations(doctrineShips, ({ one }) => ({
+  doctrine: one(doctrines, {
+    fields: [doctrineShips.doctrineId],
+    references: [doctrines.id],
   }),
 }))

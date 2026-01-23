@@ -1,5 +1,5 @@
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm"
-import type { users, characters } from "@/db/schema"
+import type { users, characters, doctrines, doctrineShips } from "@/db/schema"
 
 // User types
 export type User = InferSelectModel<typeof users>
@@ -25,4 +25,14 @@ export type LinkedCharacterDisplay = {
   corporationName: string
   isActive: boolean
   linkedAt: Date
+}
+
+export type Doctrine = InferSelectModel<typeof doctrines>
+export type NewDoctrine = InferInsertModel<typeof doctrines>
+
+export type DoctrineShip = InferSelectModel<typeof doctrineShips>
+export type NewDoctrineShip = InferInsertModel<typeof doctrineShips>
+
+export type DoctrineWithShips = Doctrine & {
+  ships: DoctrineShip[]
 }

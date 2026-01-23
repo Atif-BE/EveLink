@@ -164,6 +164,30 @@ async function fetchESIAuth<T>(
   return response.json()
 }
 
+export async function postESIAuth<T, R = unknown>(
+  endpoint: string,
+  accessToken: string,
+  body: T
+): Promise<R> {
+  const response = await fetch(`${ESI_BASE}${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      "X-User-Agent": USER_AGENT,
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`ESI request failed: ${error}`)
+  }
+
+  return response.json()
+}
+
 export async function getCharacterWallet(
   characterId: number,
   accessToken: string
@@ -308,6 +332,29 @@ const fetchKillmailDisplay = async (
       zkillboardUrl: `https://zkillboard.com/kill/${details.killmail_id}/`,
       totalValue: entry.zkb.totalValue,
     }
+  } catch {
+    return null
+  }
+}
+
+export const getTypeIdByName = async (name: string): Promise<number | null> => {
+  try {
+    const response = await fetch(`${ESI_BASE}/universe/ids/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-User-Agent": USER_AGENT,
+      },
+      body: JSON.stringify([name]),
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const result = await response.json() as { inventory_types?: { id: number; name: string }[] }
+    return result.inventory_types?.[0]?.id ?? null
   } catch {
     return null
   }
