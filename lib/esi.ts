@@ -6,9 +6,15 @@ import type {
   RaceInfo,
   BloodlineInfo,
   AncestryInfo,
+  KillmailRef,
+  Killmail,
+  UniverseType,
 } from "@/types/esi"
+import type { KillmailDisplay } from "@/types/eve"
+import type { ZKillboardEntry } from "@/types/zkillboard"
 import { getCharactersByUserId } from "@/db/queries"
 import { getValidAccessToken } from "@/lib/tokens"
+import { getCharacterKills, getCharacterLosses } from "@/lib/zkillboard"
 
 export type {
   CharacterInfo,
@@ -18,7 +24,12 @@ export type {
   RaceInfo,
   BloodlineInfo,
   AncestryInfo,
+  KillmailRef,
+  Killmail,
+  UniverseType,
 } from "@/types/esi"
+
+export type { KillmailDisplay } from "@/types/eve"
 
 export type CharacterWealth = {
   characterId: number
@@ -206,4 +217,160 @@ export async function getAggregateWealth(
   const incomplete = results.some((r) => r.balance === null)
 
   return { total, characters: results, incomplete }
+}
+
+const typeNameCache = new Map<number, string>()
+
+export async function getTypeName(typeId: number): Promise<string> {
+  if (typeNameCache.has(typeId)) {
+    return typeNameCache.get(typeId)!
+  }
+
+  try {
+    const typeInfo = await fetchESI<UniverseType>(`/universe/types/${typeId}/`)
+    typeNameCache.set(typeId, typeInfo.name)
+    return typeInfo.name
+  } catch {
+    return "Unknown Ship"
+  }
+}
+
+export async function getCharacterKillmails(
+  characterId: number,
+  accessToken: string
+): Promise<KillmailRef[]> {
+  return fetchESIAuth<KillmailRef[]>(
+    `/characters/${characterId}/killmails/recent/`,
+    accessToken
+  )
+}
+
+export async function getKillmailDetails(
+  killmailId: number,
+  hash: string
+): Promise<Killmail> {
+  return fetchESI<Killmail>(`/killmails/${killmailId}/${hash}/`)
+}
+
+export type AggregateKillmails = {
+  kills: KillmailDisplay[]
+  losses: KillmailDisplay[]
+  incomplete: boolean
+}
+
+const fetchKillmailDisplay = async (
+  entry: ZKillboardEntry,
+  isLoss: boolean
+): Promise<KillmailDisplay | null> => {
+  try {
+    const details = await getKillmailDetails(entry.killmail_id, entry.zkb.hash)
+
+    let victimName: string | undefined
+    let corpName: string | undefined
+    let shipName: string | undefined
+
+    if (details.victim.character_id) {
+      try {
+        const charInfo = await getCharacterInfo(details.victim.character_id)
+        victimName = charInfo.name
+      } catch {
+        victimName = undefined
+      }
+    }
+
+    if (details.victim.corporation_id) {
+      try {
+        const corpInfo = await getCorporationInfo(details.victim.corporation_id)
+        corpName = corpInfo.name
+      } catch {
+        corpName = undefined
+      }
+    }
+
+    if (details.victim.ship_type_id) {
+      shipName = await getTypeName(details.victim.ship_type_id)
+    }
+
+    return {
+      id: details.killmail_id,
+      hash: entry.zkb.hash,
+      timestamp: new Date(details.killmail_time),
+      isLoss,
+      victim: {
+        characterId: details.victim.character_id,
+        characterName: victimName,
+        corporationId: details.victim.corporation_id,
+        corporationName: corpName,
+        allianceId: details.victim.alliance_id,
+        shipTypeId: details.victim.ship_type_id,
+        shipName,
+      },
+      zkillboardUrl: `https://zkillboard.com/kill/${details.killmail_id}/`,
+      totalValue: entry.zkb.totalValue,
+    }
+  } catch {
+    return null
+  }
+}
+
+export const getAggregateKillmails = async (
+  userId: string,
+  limit: number = 5
+): Promise<AggregateKillmails> => {
+  const characters = await getCharactersByUserId(userId)
+
+  if (characters.length === 0) {
+    return { kills: [], losses: [], incomplete: false }
+  }
+
+  const allKillEntries: ZKillboardEntry[] = []
+  const allLossEntries: ZKillboardEntry[] = []
+  let incomplete = false
+
+  await Promise.all(
+    characters.map(async (char) => {
+      try {
+        const [kills, losses] = await Promise.all([
+          getCharacterKills(char.id),
+          getCharacterLosses(char.id),
+        ])
+        allKillEntries.push(...kills)
+        allLossEntries.push(...losses)
+      } catch {
+        incomplete = true
+      }
+    })
+  )
+
+  const uniqueKills = new Map<number, ZKillboardEntry>()
+  for (const entry of allKillEntries) {
+    if (!uniqueKills.has(entry.killmail_id)) {
+      uniqueKills.set(entry.killmail_id, entry)
+    }
+  }
+
+  const uniqueLosses = new Map<number, ZKillboardEntry>()
+  for (const entry of allLossEntries) {
+    if (!uniqueLosses.has(entry.killmail_id)) {
+      uniqueLosses.set(entry.killmail_id, entry)
+    }
+  }
+
+  const topKillEntries = Array.from(uniqueKills.values())
+    .sort((a, b) => b.killmail_id - a.killmail_id)
+    .slice(0, limit)
+
+  const topLossEntries = Array.from(uniqueLosses.values())
+    .sort((a, b) => b.killmail_id - a.killmail_id)
+    .slice(0, limit)
+
+  const [killResults, lossResults] = await Promise.all([
+    Promise.all(topKillEntries.map((entry) => fetchKillmailDisplay(entry, false))),
+    Promise.all(topLossEntries.map((entry) => fetchKillmailDisplay(entry, true))),
+  ])
+
+  const kills = killResults.filter((km): km is KillmailDisplay => km !== null)
+  const losses = lossResults.filter((km): km is KillmailDisplay => km !== null)
+
+  return { kills, losses, incomplete }
 }
