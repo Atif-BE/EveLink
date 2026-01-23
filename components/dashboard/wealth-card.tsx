@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { formatISK, formatISKLong } from "@/lib/format"
+import { formatISK } from "@/lib/format"
 import { eveImageUrl } from "@/types/eve"
 import { Wallet, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react"
 import type { AggregateWealth } from "@/lib/esi"
@@ -101,9 +102,11 @@ export function WealthCard({ wealth, className }: Readonly<WealthCardProps>) {
               className="flex items-center justify-between rounded-md bg-eve-void/30 px-2 py-1.5"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <img
+                <Image
                   src={eveImageUrl.character(char.characterId, 32)}
                   alt=""
+                  width={24}
+                  height={24}
                   className="h-6 w-6 flex-shrink-0 rounded-full"
                 />
                 {char.balance !== null && validCharacters.length > 1 && (

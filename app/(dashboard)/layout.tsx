@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar"
 
 export default async function DashboardLayout({
   children,
@@ -20,7 +21,11 @@ export default async function DashboardLayout({
         characterName={session.characterName}
       />
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8">{children}</main>
+      <DashboardSidebar />
+
+      <main className="lg:pl-[72px]">
+        <div className="mx-auto max-w-[1600px] px-6 py-8">{children}</div>
+      </main>
     </div>
   )
 }

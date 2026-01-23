@@ -3,7 +3,6 @@
 import { Plus, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { CharacterPortrait } from "@/components/eve/character-portrait"
-import { eveImageUrl } from "@/types/eve"
 
 type LinkedCharacter = {
   id: number

@@ -101,6 +101,28 @@ body {
   }
 }
 
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scan-line::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 212, 255, 0.03) 50%,
+    transparent 100%
+  );
+  animation: scan-line 8s linear infinite;
+}
+
 .font-display {
   font-family: var(--font-orbitron), system-ui, sans-serif;
 }

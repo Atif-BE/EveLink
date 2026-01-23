@@ -1,10 +1,10 @@
 import { cookies } from "next/headers"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { generateState, getAuthorizationUrl } from "@/lib/eve-sso"
 import { getSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 
-export const GET = async (_request: NextRequest, _response: NextResponse) => {
+export const GET = async () => {
   const session = await getSession()
 
   if (!session.isLoggedIn || !session.userId) {

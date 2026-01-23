@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Starfield } from "@/components/backgrounds/starfield"
 import { NebulaOverlay } from "@/components/backgrounds/nebula-overlay"
@@ -16,14 +16,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 function LoginContent() {
   const searchParams = useSearchParams()
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
+  const initialError = useMemo(() => {
     const errorCode = searchParams.get("error")
-    if (errorCode && ERROR_MESSAGES[errorCode]) {
-      setError(ERROR_MESSAGES[errorCode])
-    }
+    return errorCode && ERROR_MESSAGES[errorCode] ? ERROR_MESSAGES[errorCode] : null
   }, [searchParams])
+  const [error, setError] = useState<string | null>(initialError)
 
   const handleLogin = () => {
     window.location.href = "/api/auth/login"
