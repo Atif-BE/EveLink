@@ -142,7 +142,7 @@ export const SrpSubmitDialog = ({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs text-eve-text-muted font-medium uppercase tracking-wide">
+              <p className="text-sm text-eve-text-muted font-medium uppercase tracking-wide">
                 Eligible Fleets
               </p>
               <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -168,7 +168,7 @@ export const SrpSubmitDialog = ({
                           <AlertTriangle className="h-4 w-4 text-eve-yellow shrink-0" />
                         )}
                       </div>
-                      <div className="mt-1 flex items-center gap-1 text-xs text-eve-text-muted ml-6">
+                      <div className="mt-1 flex items-center gap-1 text-sm text-eve-text-muted ml-6">
                         <Calendar className="h-3 w-3" />
                         {formatDate(fleet.scheduledAt)}
                         {fleetIsOld && (
@@ -221,7 +221,7 @@ export const SrpSubmitDialog = ({
                 <span>Fleet:</span>
                 <span className="text-eve-text font-medium">{selectedFleet.fleetName}</span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-eve-text-muted mt-1 ml-6">
+              <div className="flex items-center gap-1 text-sm text-eve-text-muted mt-1 ml-6">
                 <Calendar className="h-3 w-3" />
                 {formatDate(selectedFleet.scheduledAt)}
               </div>

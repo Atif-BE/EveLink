@@ -164,7 +164,7 @@ export const SrpListPanel = ({
             <h2 className="font-display text-lg font-semibold text-eve-text">
               Ship Replacement Program
             </h2>
-            <p className="text-xs text-eve-text-muted">
+            <p className="text-sm text-eve-text-muted">
               Submit reimbursement requests for fleet losses
             </p>
           </div>

@@ -179,7 +179,7 @@ export const DashboardSidebar = () => {
               </div>
               <span
                 className={cn(
-                  "font-body text-xs text-eve-text-muted",
+                  "font-body text-sm text-eve-text-muted",
                   "transition-opacity duration-200",
                   isExpanded ? "opacity-100" : "opacity-0"
                 )}

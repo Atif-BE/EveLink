@@ -36,7 +36,7 @@ function LoginContent() {
       <BrandHeader />
       <LoginCard error={error} onLogin={handleLogin} onRetry={handleRetry} />
 
-      <p className="mt-8 text-center font-body text-xs text-eve-text-muted">
+      <p className="mt-8 text-center font-body text-sm text-eve-text-muted">
         By signing in, you agree to our{" "}
         <a
           href="#"

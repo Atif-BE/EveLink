@@ -67,9 +67,9 @@ export function WealthCard({ wealth, className }: Readonly<WealthCardProps>) {
         <span className="font-display text-2xl font-bold text-eve-cyan">
           {formatISK(wealth.total)}
         </span>
-        <span className="font-body text-xs text-eve-text-muted">ISK</span>
+        <span className="font-body text-sm text-eve-text-muted">ISK</span>
       </div>
-      <p className="mb-4 font-body text-xs text-eve-text-muted">
+      <p className="mb-4 font-body text-sm text-eve-text-muted">
         across {wealth.characters.length} character
         {wealth.characters.length !== 1 ? "s" : ""}
       </p>
@@ -138,7 +138,7 @@ export function WealthCard({ wealth, className }: Readonly<WealthCardProps>) {
       {hasMany && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-2 flex w-full items-center justify-center gap-1 rounded-md py-1 text-xs text-eve-text-muted transition-colors hover:bg-eve-void/30 hover:text-eve-text-secondary"
+          className="mt-2 flex w-full items-center justify-center gap-1 rounded-md py-1 text-sm text-eve-text-muted transition-colors hover:bg-eve-void/30 hover:text-eve-text-secondary"
         >
           {expanded ? (
             <>
@@ -154,7 +154,7 @@ export function WealthCard({ wealth, className }: Readonly<WealthCardProps>) {
       )}
 
       {invalidCharacters.length > 0 && !expanded && (
-        <p className="mt-2 font-body text-xs text-eve-text-muted">
+        <p className="mt-2 font-body text-sm text-eve-text-muted">
           {invalidCharacters.length} need re-authorization
         </p>
       )}

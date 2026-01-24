@@ -165,7 +165,7 @@ export const FleetDetailPanel = ({
                     <Calendar className="h-5 w-5 text-eve-cyan" />
                   </div>
                   <div>
-                    <p className="text-xs text-eve-text-muted">Scheduled Time</p>
+                    <p className="text-sm text-eve-text-muted">Scheduled Time</p>
                     <p className="text-sm font-medium text-eve-text">
                       {formatDate(fleet.scheduledAt)}
                     </p>
@@ -182,7 +182,7 @@ export const FleetDetailPanel = ({
                     />
                   </div>
                   <div>
-                    <p className="text-xs text-eve-text-muted">Fleet Commander</p>
+                    <p className="text-sm text-eve-text-muted">Fleet Commander</p>
                     <p className="text-sm font-medium text-eve-text">
                       {fleet.fcCharacterName}
                     </p>
@@ -198,7 +198,7 @@ export const FleetDetailPanel = ({
                       <BookOpen className="h-5 w-5 text-eve-cyan" />
                     </div>
                     <div>
-                      <p className="text-xs text-eve-text-muted">Doctrine</p>
+                      <p className="text-sm text-eve-text-muted">Doctrine</p>
                       <p className="text-sm font-medium text-eve-text group-hover:text-eve-cyan">
                         {fleet.doctrine.name}
                       </p>
@@ -211,7 +211,7 @@ export const FleetDetailPanel = ({
                     <Users className="h-5 w-5 text-eve-cyan" />
                   </div>
                   <div>
-                    <p className="text-xs text-eve-text-muted">Confirmed RSVPs</p>
+                    <p className="text-sm text-eve-text-muted">Confirmed RSVPs</p>
                     <p className="text-sm font-medium text-eve-text">
                       {confirmedCount} pilot{confirmedCount !== 1 ? "s" : ""}
                     </p>
@@ -232,7 +232,7 @@ export const FleetDetailPanel = ({
                     )}
                   </div>
                   <div>
-                    <p className="text-xs text-eve-text-muted">SRP Status</p>
+                    <p className="text-sm text-eve-text-muted">SRP Status</p>
                     <p
                       className={cn(
                         "text-sm font-medium",

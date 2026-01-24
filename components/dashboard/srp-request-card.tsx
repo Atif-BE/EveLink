@@ -100,7 +100,7 @@ export const SrpRequestCard = ({ request, className }: SrpRequestCardProps) => {
         <div className="mt-3">
           <button
             onClick={() => setShowDifferences(!showDifferences)}
-            className="flex items-center gap-1.5 text-xs text-eve-text-muted hover:text-eve-text transition-colors"
+            className="flex items-center gap-1.5 text-sm text-eve-text-muted hover:text-eve-text transition-colors"
           >
             <ChevronDown
               className={cn(
@@ -162,7 +162,7 @@ export const SrpRequestCard = ({ request, className }: SrpRequestCardProps) => {
 
       {request.status === "denied" && request.reviewNote && (
         <div className="mt-3 rounded-lg bg-eve-red/10 border border-eve-red/20 px-3 py-2">
-          <p className="text-xs text-eve-text-muted mb-1">Denial reason:</p>
+          <p className="text-sm text-eve-text-muted mb-1">Denial reason:</p>
           <p className="text-sm text-eve-red">{request.reviewNote}</p>
         </div>
       )}

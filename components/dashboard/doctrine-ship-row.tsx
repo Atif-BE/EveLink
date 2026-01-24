@@ -78,7 +78,7 @@ export const DoctrineShipRow = ({
             </span>
             <RoleBadge role={ship.role as ShipRole} size="sm" />
           </div>
-          <p className="truncate text-xs text-eve-text-muted">{ship.fitName}</p>
+          <p className="truncate text-sm text-eve-text-muted">{ship.fitName}</p>
         </div>
       </Link>
 

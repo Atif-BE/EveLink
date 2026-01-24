@@ -68,7 +68,7 @@ export const FleetRsvpList = ({ rsvps, className }: FleetRsvpListProps) => {
                       {rsvp.characterName}
                     </p>
                     {rsvp.shipName && (
-                      <div className="flex items-center gap-1 text-xs text-eve-text-muted">
+                      <div className="flex items-center gap-1 text-sm text-eve-text-muted">
                         <Ship className="h-3 w-3" />
                         <span>{rsvp.shipName}</span>
                       </div>
