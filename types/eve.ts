@@ -57,4 +57,6 @@ export const eveImageUrl = {
     `https://images.evetech.net/types/${typeId}/render?size=${size}`,
   render: (typeId: number, size: 32 | 64 | 128 | 256 | 512 = 64) =>
     `https://images.evetech.net/types/${typeId}/render?size=${size}`,
+  type: (typeId: number, size: 32 | 64 | 128 | 256 | 512 = 64) =>
+    `https://images.evetech.net/types/${typeId}/icon?size=${size}`,
 }

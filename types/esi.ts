@@ -78,12 +78,21 @@ export type KillmailRef = {
   killmail_hash: string
 }
 
+export type KillmailItem = {
+  item_type_id: number
+  flag: number
+  quantity_destroyed?: number
+  quantity_dropped?: number
+  singleton?: number
+}
+
 export type KillmailVictim = {
   character_id?: number
   corporation_id?: number
   alliance_id?: number
   ship_type_id?: number
   damage_taken: number
+  items?: KillmailItem[]
 }
 
 export type KillmailAttacker = {

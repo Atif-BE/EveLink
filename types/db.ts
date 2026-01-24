@@ -6,6 +6,7 @@ import type {
   doctrineShips,
   fleets,
   fleetRsvps,
+  srpRequests,
 } from "@/db/schema"
 
 // User types
@@ -57,4 +58,11 @@ export type NewFleetRsvp = InferInsertModel<typeof fleetRsvps>
 export type FleetWithRelations = Fleet & {
   doctrine: DoctrineWithShips | null
   rsvps: FleetRsvp[]
+}
+
+export type SrpRequest = InferSelectModel<typeof srpRequests>
+export type NewSrpRequest = InferInsertModel<typeof srpRequests>
+
+export type SrpRequestWithFleet = SrpRequest & {
+  fleet: Fleet
 }
