@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/session"
-import { getCharacterById } from "@/db/queries"
+import { getCharacterById } from "@/data-access"
 import { getCharacterAffiliation } from "@/lib/esi"
 
 export async function POST(request: NextRequest) {

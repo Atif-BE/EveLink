@@ -8,7 +8,7 @@ import {
   getAggregateWealth,
   getAggregateKillmails,
 } from "@/lib/esi"
-import { getCharactersByUserId } from "@/db/queries"
+import { getCharactersByUserId } from "@/data-access"
 import { CharacterCard } from "@/components/eve/character-card"
 import { AssociatedCharactersPanel } from "@/components/dashboard/associated-characters-panel"
 import { QuickStatsPanel } from "@/components/dashboard/quick-stats-panel"

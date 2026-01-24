@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
-import { getDoctrinesByAllianceId } from "@/db/queries"
+import { getDoctrinesByAllianceId } from "@/data-access"
 import { DoctrinesListPanel } from "@/components/dashboard/doctrines-list-panel"
 
 export default async function DoctrinesPage() {

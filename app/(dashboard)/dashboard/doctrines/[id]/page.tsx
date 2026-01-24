@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
-import { getDoctrineById } from "@/db/queries"
+import { getDoctrineById } from "@/data-access"
 import { DoctrineDetailPanel } from "@/components/dashboard/doctrine-detail-panel"
 
 type DoctrineDetailPageProps = {

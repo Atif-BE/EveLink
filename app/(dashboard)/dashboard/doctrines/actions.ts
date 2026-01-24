@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { getSession } from "@/lib/session"
-import { createDoctrine } from "@/db/queries"
+import { createDoctrine } from "@/data-access"
 
 export type ActionResult = {
   success: boolean

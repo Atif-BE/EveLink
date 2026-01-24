@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Ship, Trash2, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { DoctrineShipList } from "./doctrine-ship-list"
 import { AddShipDialog } from "./add-ship-dialog"
+import { deleteDoctrineAction } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
 import type { DoctrineWithShips } from "@/types/db"
 
 type DoctrineDetailPanelProps = {
@@ -19,24 +19,13 @@ export const DoctrineDetailPanel = ({
   doctrine,
   className,
 }: DoctrineDetailPanelProps) => {
-  const router = useRouter()
   const [deleting, setDeleting] = useState(false)
 
   const handleDeleteDoctrine = async () => {
     if (!confirm("Are you sure you want to delete this doctrine?")) return
 
     setDeleting(true)
-    try {
-      const res = await fetch(`/api/doctrines/${doctrine.id}`, {
-        method: "DELETE",
-      })
-      if (res.ok) {
-        router.push("/dashboard/doctrines")
-        router.refresh()
-      }
-    } finally {
-      setDeleting(false)
-    }
+    await deleteDoctrineAction(doctrine.id)
   }
 
   const sortedShips = [...doctrine.ships].sort((a, b) => b.priority - a.priority)

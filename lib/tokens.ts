@@ -1,4 +1,4 @@
-import { getCharacterById, updateCharacterTokens } from "@/db/queries"
+import { getCharacterById, updateCharacterTokens } from "@/data-access"
 import { refreshAccessToken } from "@/lib/eve-sso"
 
 export async function getValidAccessToken(

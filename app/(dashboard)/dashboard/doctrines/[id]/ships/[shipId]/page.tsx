@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { getDoctrineShipById, getCharactersByUserId } from "@/db/queries"
+import { getDoctrineShipById, getCharactersByUserId } from "@/data-access"
 import { getSession } from "@/lib/session"
 import { getValidAccessToken } from "@/lib/tokens"
 import {

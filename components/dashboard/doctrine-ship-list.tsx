@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import {
   DndContext,
   closestCenter,
@@ -19,7 +18,7 @@ import {
 } from "@dnd-kit/sortable"
 import { cn } from "@/lib/utils"
 import { DoctrineShipRow } from "./doctrine-ship-row"
-import { reorderShips } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
+import { reorderShips, removeShipAction } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
 import type { DoctrineShip } from "@/types/db"
 
 type DoctrineShipListProps = {
@@ -33,7 +32,6 @@ export const DoctrineShipList = ({
   doctrineId,
   className,
 }: DoctrineShipListProps) => {
-  const router = useRouter()
   const [ships, setShips] = useState(initialShips)
   const [deletingShipId, setDeletingShipId] = useState<string | null>(null)
 
@@ -67,13 +65,9 @@ export const DoctrineShipList = ({
 
     setDeletingShipId(shipId)
     try {
-      const res = await fetch(
-        `/api/doctrines/${doctrineId}/ships/${shipId}`,
-        { method: "DELETE" }
-      )
-      if (res.ok) {
+      const result = await removeShipAction(doctrineId, shipId)
+      if (result.success) {
         setShips(ships.filter((s) => s.id !== shipId))
-        router.refresh()
       }
     } finally {
       setDeletingShipId(null)

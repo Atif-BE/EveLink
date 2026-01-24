@@ -16,7 +16,7 @@ import type {
 import type { ParsedFitting } from "@/types/fitting"
 import type { KillmailDisplay } from "@/types/eve"
 import type { ZKillboardEntry } from "@/types/zkillboard"
-import { getCharactersByUserId } from "@/db/queries"
+import { getCharactersByUserId } from "@/data-access"
 import { getValidAccessToken } from "@/lib/tokens"
 import { getCharacterKills, getCharacterLosses } from "@/lib/zkillboard"
 

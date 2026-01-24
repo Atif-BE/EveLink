@@ -1,8 +1,9 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
-import { getDoctrineById, addShipToDoctrine, getCharacterById, updateShipPriority } from "@/db/queries"
+import { getDoctrineById, addShipToDoctrine, getCharacterById, updateShipPriority, softDeleteDoctrine, removeShipFromDoctrine } from "@/data-access"
 import { parseEft, convertToESIFitting } from "@/lib/eft"
 import { getTypeIdByName, postESIAuth } from "@/lib/esi"
 import { getValidAccessToken } from "@/lib/tokens"
@@ -121,6 +122,55 @@ export const reorderShips = async (
     )
   )
 
+  revalidatePath(`/dashboard/doctrines/${doctrineId}`)
+  return { success: true }
+}
+
+export const deleteDoctrineAction = async (
+  doctrineId: string
+): Promise<ActionResult> => {
+  const session = await getSession()
+  if (!session.isLoggedIn || !session.allianceId) {
+    return { success: false, error: "Unauthorized" }
+  }
+
+  const doctrine = await getDoctrineById(doctrineId)
+  if (!doctrine) {
+    return { success: false, error: "Doctrine not found" }
+  }
+
+  if (doctrine.allianceId !== session.allianceId) {
+    return { success: false, error: "Forbidden" }
+  }
+
+  await softDeleteDoctrine(doctrineId)
+  redirect("/dashboard/doctrines")
+}
+
+export const removeShipAction = async (
+  doctrineId: string,
+  shipId: string
+): Promise<ActionResult> => {
+  const session = await getSession()
+  if (!session.isLoggedIn || !session.allianceId) {
+    return { success: false, error: "Unauthorized" }
+  }
+
+  const doctrine = await getDoctrineById(doctrineId)
+  if (!doctrine) {
+    return { success: false, error: "Doctrine not found" }
+  }
+
+  if (doctrine.allianceId !== session.allianceId) {
+    return { success: false, error: "Forbidden" }
+  }
+
+  const shipExists = doctrine.ships.some((s) => s.id === shipId)
+  if (!shipExists) {
+    return { success: false, error: "Ship not found" }
+  }
+
+  await removeShipFromDoctrine(shipId)
   revalidatePath(`/dashboard/doctrines/${doctrineId}`)
   return { success: true }
 }

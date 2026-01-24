@@ -10,7 +10,7 @@ import {
   createCharacter,
   updateCharacterTokens,
   updateCharacterInfo,
-} from "@/db/queries"
+} from "@/data-access"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
