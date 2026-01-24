@@ -15,14 +15,16 @@ const roleColors: Record<ShipRole, string> = {
 
 type RoleBadgeProps = {
   role: ShipRole
+  size?: "sm" | "default"
   className?: string
 }
 
-export const RoleBadge = ({ role, className }: RoleBadgeProps) => {
+export const RoleBadge = ({ role, size = "default", className }: RoleBadgeProps) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-md border font-medium",
+        size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         roleColors[role],
         className
       )}

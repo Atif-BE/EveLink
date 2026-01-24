@@ -137,3 +137,17 @@ export async function getShipsByDoctrineId(doctrineId: string) {
     orderBy: [desc(doctrineShips.priority), desc(doctrineShips.createdAt)],
   })
 }
+
+export async function getDoctrineShipById(shipId: string) {
+  return db.query.doctrineShips.findFirst({
+    where: eq(doctrineShips.id, shipId),
+    with: { doctrine: true },
+  })
+}
+
+export async function updateShipPriority(shipId: string, priority: number) {
+  await db
+    .update(doctrineShips)
+    .set({ priority })
+    .where(eq(doctrineShips.id, shipId))
+}

@@ -1,0 +1,103 @@
+"use client"
+
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import Image from "next/image"
+import Link from "next/link"
+import { GripVertical, Trash2, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { eveImageUrl } from "@/types/eve"
+import { RoleBadge } from "@/components/eve/role-badge"
+import type { DoctrineShip } from "@/types/db"
+import type { ShipRole } from "@/types/fitting"
+
+type DoctrineShipRowProps = {
+  ship: DoctrineShip
+  doctrineId: string
+  onDelete?: (shipId: string) => void
+  isDeleting?: boolean
+  className?: string
+}
+
+export const DoctrineShipRow = ({
+  ship,
+  doctrineId,
+  onDelete,
+  isDeleting,
+  className,
+}: DoctrineShipRowProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: ship.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group flex items-center gap-3 rounded-lg border border-eve-border bg-eve-deep p-3 transition-all",
+        isDragging && "z-50 border-eve-cyan/50 bg-eve-deep/90 shadow-lg shadow-eve-cyan/10",
+        className
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab touch-none text-eve-text-muted/50 transition-colors hover:text-eve-text-muted active:cursor-grabbing"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+
+      <Link
+        href={`/dashboard/doctrines/${doctrineId}/ships/${ship.id}`}
+        className="flex min-w-0 flex-1 items-center gap-3"
+      >
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-eve-border bg-eve-void">
+          <Image
+            src={eveImageUrl.render(ship.shipTypeId, 64)}
+            alt={ship.shipName}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="truncate font-display text-sm font-medium text-eve-text">
+              {ship.shipName}
+            </span>
+            <RoleBadge role={ship.role as ShipRole} size="sm" />
+          </div>
+          <p className="truncate text-xs text-eve-text-muted">{ship.fitName}</p>
+        </div>
+      </Link>
+
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(ship.id)
+          }}
+          disabled={isDeleting}
+          className="rounded-lg p-2 text-eve-text-muted opacity-0 transition-all hover:bg-eve-red/10 hover:text-eve-red group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isDeleting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Trash2 className="h-4 w-4" />
+          )}
+        </button>
+      )}
+    </div>
+  )
+}

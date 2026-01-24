@@ -1,6 +1,7 @@
 export type FittingModule = {
   name: string
   quantity: number
+  typeId?: number
 }
 
 export type ParsedFitting = {

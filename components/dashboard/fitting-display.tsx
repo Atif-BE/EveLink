@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import type { ParsedFitting, FittingModule } from "@/types/fitting"
 
@@ -13,26 +14,38 @@ const SlotSection = ({ title, modules, accentColor }: SlotSectionProps) => {
   if (modules.length === 0) return null
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <h4
         className={cn(
-          "text-[10px] font-semibold uppercase tracking-wider",
+          "text-sm font-semibold uppercase tracking-wider",
           accentColor
         )}
       >
         {title}
       </h4>
-      <div className="space-y-0.5">
+      <div className="space-y-1.5">
         {modules.map((module, idx) => (
           <div
             key={`${module.name}-${idx}`}
-            className="flex items-center justify-between text-xs"
+            className="flex items-center gap-3 text-base"
           >
-            <span className="truncate text-eve-text-secondary">
+            {module.typeId ? (
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded border border-eve-border/50 bg-eve-void">
+                <Image
+                  src={`https://images.evetech.net/types/${module.typeId}/icon?size=64`}
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <div className="h-8 w-8 shrink-0 rounded border border-eve-border/30 bg-eve-void/50" />
+            )}
+            <span className="min-w-0 flex-1 truncate text-eve-text-secondary">
               {module.name}
             </span>
             {module.quantity > 1 && (
-              <span className="ml-2 shrink-0 text-eve-text-muted">
+              <span className="shrink-0 text-eve-text-muted">
                 x{module.quantity}
               </span>
             )}
@@ -50,7 +63,7 @@ type FittingDisplayProps = {
 
 export const FittingDisplay = ({ fitting, className }: FittingDisplayProps) => {
   return (
-    <div className={cn("space-y-3 rounded-lg bg-eve-void/30 p-3", className)}>
+    <div className={cn("space-y-4 rounded-lg bg-eve-void/30 p-4", className)}>
       <SlotSection
         title="High Slots"
         modules={fitting.highSlots}

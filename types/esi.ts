@@ -108,3 +108,35 @@ export type UniverseType = {
   description: string
   group_id: number
 }
+
+export type DogmaAttribute = {
+  attribute_id: number
+  value: number
+}
+
+export type UniverseTypeWithSkills = {
+  type_id: number
+  name: string
+  description: string
+  group_id: number
+  dogma_attributes?: DogmaAttribute[]
+}
+
+export type SkillRequirement = {
+  skillId: number
+  skillName: string
+  requiredLevel: number
+}
+
+export type CharacterSkill = {
+  skill_id: number
+  active_skill_level: number
+  trained_skill_level: number
+  skillpoints_in_skill: number
+}
+
+export type CharacterSkillsResponse = {
+  skills: CharacterSkill[]
+  total_sp: number
+  unallocated_sp?: number
+}

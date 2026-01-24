@@ -36,3 +36,7 @@ export type NewDoctrineShip = InferInsertModel<typeof doctrineShips>
 export type DoctrineWithShips = Doctrine & {
   ships: DoctrineShip[]
 }
+
+export type DoctrineShipWithDoctrine = DoctrineShip & {
+  doctrine: Doctrine
+}

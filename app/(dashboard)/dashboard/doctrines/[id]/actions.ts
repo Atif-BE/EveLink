@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { getSession } from "@/lib/session"
-import { getDoctrineById, addShipToDoctrine, getCharacterById } from "@/db/queries"
+import { getDoctrineById, addShipToDoctrine, getCharacterById, updateShipPriority } from "@/db/queries"
 import { parseEft, convertToESIFitting } from "@/lib/eft"
 import { getTypeIdByName, postESIAuth } from "@/lib/esi"
 import { getValidAccessToken } from "@/lib/tokens"
@@ -99,4 +99,28 @@ export const saveFittingToEve = async (
     }
     return { success: false, error: message }
   }
+}
+
+export const reorderShips = async (
+  doctrineId: string,
+  shipIds: string[]
+): Promise<ActionResult> => {
+  const session = await getSession()
+  if (!session.isLoggedIn || !session.allianceId) {
+    return { success: false, error: "Unauthorized" }
+  }
+
+  const doctrine = await getDoctrineById(doctrineId)
+  if (!doctrine || doctrine.allianceId !== session.allianceId) {
+    return { success: false, error: "Doctrine not found" }
+  }
+
+  await Promise.all(
+    shipIds.map((shipId, index) =>
+      updateShipPriority(shipId, shipIds.length - index)
+    )
+  )
+
+  revalidatePath(`/dashboard/doctrines/${doctrineId}`)
+  return { success: true }
 }

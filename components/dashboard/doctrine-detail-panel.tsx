@@ -6,10 +6,9 @@ import Link from "next/link"
 import { ArrowLeft, Ship, Trash2, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { DoctrineShipCard } from "./doctrine-ship-card"
+import { DoctrineShipList } from "./doctrine-ship-list"
 import { AddShipDialog } from "./add-ship-dialog"
 import type { DoctrineWithShips } from "@/types/db"
-import type { ShipRole } from "@/types/fitting"
 
 type DoctrineDetailPanelProps = {
   doctrine: DoctrineWithShips
@@ -22,29 +21,6 @@ export const DoctrineDetailPanel = ({
 }: DoctrineDetailPanelProps) => {
   const router = useRouter()
   const [deleting, setDeleting] = useState(false)
-  const [deletingShipId, setDeletingShipId] = useState<string | null>(null)
-
-  const shipsByRole = doctrine.ships.reduce(
-    (acc, ship) => {
-      const role = ship.role as ShipRole
-      if (!acc[role]) acc[role] = []
-      acc[role].push(ship)
-      return acc
-    },
-    {} as Record<ShipRole, typeof doctrine.ships>
-  )
-
-  const roleOrder: ShipRole[] = [
-    "DPS",
-    "Logi",
-    "Support",
-    "Tackle",
-    "EWAR",
-    "Scout",
-    "Command",
-    "Capital",
-    "Other",
-  ]
 
   const handleDeleteDoctrine = async () => {
     if (!confirm("Are you sure you want to delete this doctrine?")) return
@@ -63,22 +39,7 @@ export const DoctrineDetailPanel = ({
     }
   }
 
-  const handleDeleteShip = async (shipId: string) => {
-    if (!confirm("Remove this ship from the doctrine?")) return
-
-    setDeletingShipId(shipId)
-    try {
-      const res = await fetch(
-        `/api/doctrines/${doctrine.id}/ships/${shipId}`,
-        { method: "DELETE" }
-      )
-      if (res.ok) {
-        router.refresh()
-      }
-    } finally {
-      setDeletingShipId(null)
-    }
-  }
+  const sortedShips = [...doctrine.ships].sort((a, b) => b.priority - a.priority)
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -127,36 +88,7 @@ export const DoctrineDetailPanel = ({
       </div>
 
       {doctrine.ships.length > 0 ? (
-        <div className="space-y-8">
-          {roleOrder.map((role) => {
-            const ships = shipsByRole[role]
-            if (!ships || ships.length === 0) return null
-
-            return (
-              <div key={role}>
-                <h3 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-secondary">
-                  {role}
-                  <span className="ml-2 text-eve-text-muted">
-                    ({ships.length})
-                  </span>
-                </h3>
-                <div className="grid gap-3">
-                  {ships.map((ship) => (
-                    <DoctrineShipCard
-                      key={ship.id}
-                      ship={ship}
-                      onDelete={
-                        deletingShipId === ship.id
-                          ? undefined
-                          : handleDeleteShip
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
+        <DoctrineShipList ships={sortedShips} doctrineId={doctrine.id} />
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-eve-border/50 bg-eve-deep/50 py-16">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-eve-void/50">

@@ -9,7 +9,11 @@ import type {
   KillmailRef,
   Killmail,
   UniverseType,
+  UniverseTypeWithSkills,
+  CharacterSkillsResponse,
+  SkillRequirement,
 } from "@/types/esi"
+import type { ParsedFitting } from "@/types/fitting"
 import type { KillmailDisplay } from "@/types/eve"
 import type { ZKillboardEntry } from "@/types/zkillboard"
 import { getCharactersByUserId } from "@/db/queries"
@@ -27,6 +31,9 @@ export type {
   KillmailRef,
   Killmail,
   UniverseType,
+  UniverseTypeWithSkills,
+  CharacterSkillsResponse,
+  SkillRequirement,
 } from "@/types/esi"
 
 export type { KillmailDisplay } from "@/types/eve"
@@ -360,6 +367,82 @@ export const getTypeIdByName = async (name: string): Promise<number | null> => {
   }
 }
 
+export const getTypeIdsByNames = async (
+  names: string[]
+): Promise<Map<string, number>> => {
+  const uniqueNames = [...new Set(names.filter((n) => n.trim()))]
+  const result = new Map<string, number>()
+
+  if (uniqueNames.length === 0) return result
+
+  const batchSize = 500
+  for (let i = 0; i < uniqueNames.length; i += batchSize) {
+    const batch = uniqueNames.slice(i, i + batchSize)
+
+    try {
+      const response = await fetch(`${ESI_BASE}/universe/ids/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-User-Agent": USER_AGENT,
+        },
+        body: JSON.stringify(batch),
+      })
+
+      if (response.ok) {
+        const data = (await response.json()) as {
+          inventory_types?: { id: number; name: string }[]
+        }
+        for (const item of data.inventory_types ?? []) {
+          result.set(item.name, item.id)
+        }
+      }
+    } catch {
+    }
+  }
+
+  return result
+}
+
+export const resolveFittingModuleTypeIds = async (
+  fitting: ParsedFitting
+): Promise<ParsedFitting> => {
+  const allModuleNames: string[] = []
+  const moduleArrays = [
+    fitting.highSlots,
+    fitting.midSlots,
+    fitting.lowSlots,
+    fitting.rigs,
+    fitting.drones,
+    fitting.cargo,
+  ]
+
+  for (const modules of moduleArrays) {
+    for (const mod of modules) {
+      allModuleNames.push(mod.name)
+    }
+  }
+
+  const typeIdMap = await getTypeIdsByNames(allModuleNames)
+
+  const resolveModules = (modules: typeof fitting.highSlots) =>
+    modules.map((mod) => ({
+      ...mod,
+      typeId: typeIdMap.get(mod.name),
+    }))
+
+  return {
+    ...fitting,
+    highSlots: resolveModules(fitting.highSlots),
+    midSlots: resolveModules(fitting.midSlots),
+    lowSlots: resolveModules(fitting.lowSlots),
+    rigs: resolveModules(fitting.rigs),
+    drones: resolveModules(fitting.drones),
+    cargo: resolveModules(fitting.cargo),
+  }
+}
+
 export const getAggregateKillmails = async (
   userId: string,
   limit: number = 5
@@ -420,4 +503,201 @@ export const getAggregateKillmails = async (
   const losses = lossResults.filter((km): km is KillmailDisplay => km !== null)
 
   return { kills, losses, incomplete }
+}
+
+const SKILL_ATTRIBUTE_IDS = {
+  requiredSkill1: 182,
+  requiredSkill1Level: 277,
+  requiredSkill2: 183,
+  requiredSkill2Level: 278,
+  requiredSkill3: 184,
+  requiredSkill3Level: 279,
+  requiredSkill4: 1285,
+  requiredSkill4Level: 1286,
+  requiredSkill5: 1289,
+  requiredSkill5Level: 1287,
+  requiredSkill6: 1290,
+  requiredSkill6Level: 1288,
+}
+
+export const getTypeWithSkills = async (
+  typeId: number
+): Promise<UniverseTypeWithSkills | null> => {
+  try {
+    const response = await fetch(
+      `${ESI_BASE}/universe/types/${typeId}/?datasource=tranquility`,
+      {
+        headers: {
+          Accept: "application/json",
+          "X-User-Agent": USER_AGENT,
+        },
+      }
+    )
+
+    if (!response.ok) return null
+    return response.json()
+  } catch {
+    return null
+  }
+}
+
+const skillNameCache = new Map<number, string>()
+
+const getSkillName = async (skillId: number): Promise<string> => {
+  if (skillNameCache.has(skillId)) {
+    return skillNameCache.get(skillId)!
+  }
+
+  try {
+    const typeInfo = await fetchESI<UniverseType>(`/universe/types/${skillId}/`)
+    skillNameCache.set(skillId, typeInfo.name)
+    return typeInfo.name
+  } catch {
+    return `Unknown Skill (${skillId})`
+  }
+}
+
+const extractSkillRequirements = (
+  dogmaAttributes: { attribute_id: number; value: number }[] | undefined
+): { skillId: number; level: number }[] => {
+  if (!dogmaAttributes) return []
+
+  const attrs = new Map(dogmaAttributes.map((a) => [a.attribute_id, a.value]))
+  const requirements: { skillId: number; level: number }[] = []
+
+  const pairs = [
+    [SKILL_ATTRIBUTE_IDS.requiredSkill1, SKILL_ATTRIBUTE_IDS.requiredSkill1Level],
+    [SKILL_ATTRIBUTE_IDS.requiredSkill2, SKILL_ATTRIBUTE_IDS.requiredSkill2Level],
+    [SKILL_ATTRIBUTE_IDS.requiredSkill3, SKILL_ATTRIBUTE_IDS.requiredSkill3Level],
+    [SKILL_ATTRIBUTE_IDS.requiredSkill4, SKILL_ATTRIBUTE_IDS.requiredSkill4Level],
+    [SKILL_ATTRIBUTE_IDS.requiredSkill5, SKILL_ATTRIBUTE_IDS.requiredSkill5Level],
+    [SKILL_ATTRIBUTE_IDS.requiredSkill6, SKILL_ATTRIBUTE_IDS.requiredSkill6Level],
+  ]
+
+  for (const [skillAttr, levelAttr] of pairs) {
+    const skillId = attrs.get(skillAttr)
+    const level = attrs.get(levelAttr)
+    if (skillId && level) {
+      requirements.push({ skillId: Math.floor(skillId), level: Math.floor(level) })
+    }
+  }
+
+  return requirements
+}
+
+export const getCharacterSkills = async (
+  characterId: number,
+  accessToken: string
+): Promise<CharacterSkillsResponse | null> => {
+  try {
+    return await fetchESIAuth<CharacterSkillsResponse>(
+      `/characters/${characterId}/skills/`,
+      accessToken
+    )
+  } catch {
+    return null
+  }
+}
+
+export const getFittingSkillRequirements = async (
+  fitting: ParsedFitting,
+  shipTypeId: number
+): Promise<SkillRequirement[]> => {
+  const allModuleNames: string[] = []
+
+  const moduleArrays = [
+    fitting.highSlots,
+    fitting.midSlots,
+    fitting.lowSlots,
+    fitting.rigs,
+    fitting.drones,
+  ]
+
+  for (const modules of moduleArrays) {
+    for (const mod of modules) {
+      allModuleNames.push(mod.name)
+    }
+  }
+
+  const typeIds = await Promise.all([
+    Promise.resolve(shipTypeId),
+    ...allModuleNames.map((name) => getTypeIdByName(name)),
+  ])
+
+  const validTypeIds = typeIds.filter((id): id is number => id !== null)
+  const uniqueTypeIds = [...new Set(validTypeIds)]
+
+  const typeInfos = await Promise.all(
+    uniqueTypeIds.map((id) => getTypeWithSkills(id))
+  )
+
+  const skillMap = new Map<number, number>()
+
+  for (const typeInfo of typeInfos) {
+    if (!typeInfo) continue
+    const reqs = extractSkillRequirements(typeInfo.dogma_attributes)
+    for (const req of reqs) {
+      const existing = skillMap.get(req.skillId) ?? 0
+      skillMap.set(req.skillId, Math.max(existing, req.level))
+    }
+  }
+
+  const requirements: SkillRequirement[] = []
+  for (const [skillId, requiredLevel] of skillMap) {
+    const skillName = await getSkillName(skillId)
+    requirements.push({ skillId, skillName, requiredLevel })
+  }
+
+  requirements.sort((a, b) => {
+    if (a.requiredLevel !== b.requiredLevel) {
+      return b.requiredLevel - a.requiredLevel
+    }
+    return a.skillName.localeCompare(b.skillName)
+  })
+
+  return requirements
+}
+
+export type CharacterFlyability = {
+  characterId: number
+  characterName: string
+  canFly: boolean
+  missingSkills: SkillRequirement[]
+}
+
+export const checkCharacterCanFly = async (
+  characterId: number,
+  characterName: string,
+  requirements: SkillRequirement[],
+  accessToken: string
+): Promise<CharacterFlyability> => {
+  const skills = await getCharacterSkills(characterId, accessToken)
+
+  if (!skills) {
+    return {
+      characterId,
+      characterName,
+      canFly: false,
+      missingSkills: requirements,
+    }
+  }
+
+  const skillLevels = new Map(
+    skills.skills.map((s) => [s.skill_id, s.trained_skill_level])
+  )
+
+  const missingSkills: SkillRequirement[] = []
+  for (const req of requirements) {
+    const trained = skillLevels.get(req.skillId) ?? 0
+    if (trained < req.requiredLevel) {
+      missingSkills.push(req)
+    }
+  }
+
+  return {
+    characterId,
+    characterName,
+    canFly: missingSkills.length === 0,
+    missingSkills,
+  }
 }
