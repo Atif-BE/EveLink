@@ -135,11 +135,44 @@ export const fleetsRelations = relations(fleets, ({ one, many }) => ({
     references: [doctrines.id],
   }),
   rsvps: many(fleetRsvps),
+  srpRequests: many(srpRequests),
 }))
 
 export const fleetRsvpsRelations = relations(fleetRsvps, ({ one }) => ({
   fleet: one(fleets, {
     fields: [fleetRsvps.fleetId],
+    references: [fleets.id],
+  }),
+}))
+
+export const srpRequests = pgTable("srp_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fleetId: uuid("fleet_id")
+    .notNull()
+    .references(() => fleets.id, { onDelete: "cascade" }),
+  characterId: integer("character_id").notNull(),
+  characterName: text("character_name").notNull(),
+  killmailId: integer("killmail_id").notNull(),
+  killmailHash: text("killmail_hash").notNull(),
+  shipTypeId: integer("ship_type_id").notNull(),
+  shipName: text("ship_name").notNull(),
+  iskValue: real("isk_value").notNull(),
+  fitValidation: text("fit_validation").notNull(),
+  fitMatchScore: real("fit_match_score").notNull(),
+  fitDifferences: jsonb("fit_differences"),
+  status: text("status").default("pending").notNull(),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  iskPayout: real("isk_payout"),
+  reviewedById: integer("reviewed_by_id"),
+  reviewedByName: text("reviewed_by_name"),
+  reviewNote: text("review_note"),
+  reviewedAt: timestamp("reviewed_at"),
+})
+
+export const srpRequestsRelations = relations(srpRequests, ({ one }) => ({
+  fleet: one(fleets, {
+    fields: [srpRequests.fleetId],
     references: [fleets.id],
   }),
 }))

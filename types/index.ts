@@ -34,4 +34,22 @@ export type {
   NewCharacter,
   CharacterWithCorp,
   LinkedCharacterDisplay,
+  SrpRequest,
+  NewSrpRequest,
+  SrpRequestWithFleet,
 } from "./db"
+
+// SRP types
+export type {
+  SrpRequestStatus,
+  FitValidationStatus,
+  FitDifferences,
+  FitComparisonResult,
+  EligibleLoss,
+} from "./srp"
+export {
+  SRP_REQUEST_STATUSES,
+  FIT_VALIDATION_STATUSES,
+  SRP_STATUS_CONFIG,
+  FIT_VALIDATION_CONFIG,
+} from "./srp"
