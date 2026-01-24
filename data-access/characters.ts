@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { eq, and } from "drizzle-orm"
 import { db } from "@/db"
 import { characters } from "@/db/schema"
 import type { NewCharacter } from "@/types/db"
@@ -60,4 +60,14 @@ export const deactivateCharacter = async (characterId: number) => {
     .update(characters)
     .set({ isActive: false })
     .where(eq(characters.id, characterId))
+}
+
+export const getCharactersByAllianceId = async (allianceId: number) => {
+  return db.query.characters.findMany({
+    where: and(
+      eq(characters.allianceId, allianceId),
+      eq(characters.isActive, true)
+    ),
+    orderBy: (characters, { asc }) => [asc(characters.name)],
+  })
 }

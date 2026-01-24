@@ -11,6 +11,7 @@
   --eve-purple-dim: #6d42c9;
   --eve-red: #ef4444;
   --eve-green: #22c55e;
+  --eve-yellow: #facc15;
   --eve-text-primary: #f1f5f9;
   --eve-text-secondary: #94a3b8;
   --eve-text-muted: #64748b;
@@ -36,6 +37,7 @@
   --color-eve-purple-dim: var(--eve-purple-dim);
   --color-eve-red: var(--eve-red);
   --color-eve-green: var(--eve-green);
+  --color-eve-yellow: var(--eve-yellow);
   --color-eve-text-primary: var(--eve-text-primary);
   --color-eve-text-secondary: var(--eve-text-secondary);
   --color-eve-text-muted: var(--eve-text-muted);

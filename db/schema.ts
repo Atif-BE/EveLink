@@ -95,3 +95,50 @@ export const doctrineShipsRelations = relations(doctrineShips, ({ one }) => ({
     references: [doctrines.id],
   }),
 }))
+
+export const fleets = pgTable("fleets", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  allianceId: integer("alliance_id").notNull(),
+  doctrineId: uuid("doctrine_id").references(() => doctrines.id, {
+    onDelete: "set null",
+  }),
+  fcCharacterId: integer("fc_character_id").notNull(),
+  fcCharacterName: text("fc_character_name").notNull(),
+  createdById: integer("created_by_id").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  status: text("status").default("scheduled").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
+export const fleetRsvps = pgTable("fleet_rsvps", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fleetId: uuid("fleet_id")
+    .notNull()
+    .references(() => fleets.id, { onDelete: "cascade" }),
+  characterId: integer("character_id").notNull(),
+  characterName: text("character_name").notNull(),
+  shipTypeId: integer("ship_type_id"),
+  shipName: text("ship_name"),
+  status: text("status").default("confirmed").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
+export const fleetsRelations = relations(fleets, ({ one, many }) => ({
+  doctrine: one(doctrines, {
+    fields: [fleets.doctrineId],
+    references: [doctrines.id],
+  }),
+  rsvps: many(fleetRsvps),
+}))
+
+export const fleetRsvpsRelations = relations(fleetRsvps, ({ one }) => ({
+  fleet: one(fleets, {
+    fields: [fleetRsvps.fleetId],
+    references: [fleets.id],
+  }),
+}))
