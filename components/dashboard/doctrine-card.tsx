@@ -46,7 +46,7 @@ export const DoctrineCard = ({ doctrine, className }: DoctrineCardProps) => {
               {doctrine.name}
             </h3>
             {doctrine.description && (
-              <p className="mt-1 line-clamp-2 text-xs text-eve-text-muted">
+              <p className="mt-1 line-clamp-2 text-sm text-eve-text-muted">
                 {doctrine.description}
               </p>
             )}
@@ -68,7 +68,7 @@ export const DoctrineCard = ({ doctrine, className }: DoctrineCardProps) => {
             {topRoles.map(([role, count]) => (
               <div key={role} className="flex items-center gap-1">
                 <RoleBadge role={role as ShipRole} />
-                <span className="text-xs text-eve-text-muted">x{count}</span>
+                <span className="text-sm text-eve-text-muted">x{count}</span>
               </div>
             ))}
           </div>
@@ -90,7 +90,7 @@ export const DoctrineCard = ({ doctrine, className }: DoctrineCardProps) => {
               </div>
             ))}
             {doctrine.ships.length > 4 && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-eve-deep bg-eve-void text-xs text-eve-text-muted">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-eve-deep bg-eve-void text-sm text-eve-text-muted">
                 +{doctrine.ships.length - 4}
               </div>
             )}

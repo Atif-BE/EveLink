@@ -89,7 +89,7 @@ export function AssociatedCharactersPanel({
                 >
                   {character.name}
                 </p>
-                <p className="truncate font-body text-xs text-eve-text-muted">
+                <p className="truncate font-body text-sm text-eve-text-muted">
                   {character.corporationName}
                 </p>
               </div>

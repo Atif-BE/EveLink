@@ -111,7 +111,7 @@ export const LoginCard = ({
               <div className="h-px flex-1 bg-linear-to-r from-transparent via-eve-border to-transparent" />
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 animate-pulse-glow rounded-full bg-eve-green" />
-                <span className="font-body text-xs text-eve-text-muted">
+                <span className="font-body text-sm text-eve-text-muted">
                   Systems Online
                 </span>
               </div>

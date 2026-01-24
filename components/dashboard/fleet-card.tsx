@@ -67,7 +67,7 @@ export const FleetCard = ({ fleet, className }: FleetCardProps) => {
               <FleetStatusBadge status={fleet.status as FleetStatus} />
             </div>
             {fleet.description && (
-              <p className="line-clamp-2 text-xs text-eve-text-muted">
+              <p className="line-clamp-2 text-sm text-eve-text-muted">
                 {fleet.description}
               </p>
             )}
@@ -85,7 +85,7 @@ export const FleetCard = ({ fleet, className }: FleetCardProps) => {
             />
           </div>
           <div>
-            <p className="text-xs text-eve-text-muted">Fleet Commander</p>
+            <p className="text-sm text-eve-text-muted">Fleet Commander</p>
             <p className="text-sm text-eve-text">{fleet.fcCharacterName}</p>
           </div>
         </div>

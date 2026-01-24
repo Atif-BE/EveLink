@@ -82,7 +82,7 @@ export const DoctrineShipCard = ({
             </h4>
             <RoleBadge role={ship.role as ShipRole} />
           </div>
-          <p className="truncate text-xs text-eve-text-muted">{ship.fitName}</p>
+          <p className="truncate text-sm text-eve-text-muted">{ship.fitName}</p>
         </div>
 
         <div className="flex items-center gap-2">

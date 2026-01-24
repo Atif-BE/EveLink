@@ -28,7 +28,7 @@ export const FleetsListPanel = ({
             <h2 className="font-display text-lg font-semibold text-eve-text">
               Fleets
             </h2>
-            <p className="text-xs text-eve-text-muted">
+            <p className="text-sm text-eve-text-muted">
               {fleets.length} upcoming fleet{fleets.length !== 1 ? "s" : ""}
             </p>
           </div>

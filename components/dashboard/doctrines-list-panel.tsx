@@ -24,7 +24,7 @@ export const DoctrinesListPanel = ({
             <h2 className="font-display text-lg font-semibold text-eve-text">
               Doctrines
             </h2>
-            <p className="text-xs text-eve-text-muted">
+            <p className="text-sm text-eve-text-muted">
               {doctrines.length} doctrine{doctrines.length !== 1 ? "s" : ""} available
             </p>
           </div>
