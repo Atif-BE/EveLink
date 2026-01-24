@@ -20,17 +20,14 @@ type SrpListPanelProps = {
   className?: string
 }
 
-const FLEET_TIME_WINDOW = {
-  BEFORE_MS: 30 * 60 * 1000,
-  AFTER_MS: 6 * 60 * 60 * 1000,
-}
-
 type LossWithMeta = {
   entry: ZKillboardEntry
   shipTypeId: number
   shipName: string
   killmailTime: Date
 }
+
+const LOSS_AGE_LIMIT_DAYS = 30
 
 export const SrpListPanel = ({
   srpRequests,
@@ -41,11 +38,7 @@ export const SrpListPanel = ({
   const [eligibleLosses, setEligibleLosses] = useState<EligibleLoss[]>([])
   const [isLoadingLosses, setIsLoadingLosses] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
-
   const [selectedLoss, setSelectedLoss] = useState<EligibleLoss | null>(null)
-  const [selectedFleetId, setSelectedFleetId] = useState<string | null>(null)
-  const [selectedDoctrineShipId, setSelectedDoctrineShipId] = useState<string | null>(null)
-  const [selectedFleetName, setSelectedFleetName] = useState<string | null>(null)
 
   const existingKillmailIds = useMemo(
     () => new Set(srpRequests.map((r) => `${r.killmailId}-${r.fleetId}`)),
@@ -73,6 +66,12 @@ export const SrpListPanel = ({
                 if (kmRes.ok) {
                   const km = await kmRes.json()
                   if (km.victim?.ship_type_id) {
+                    const killmailTime = new Date(km.killmail_time)
+                    const ageMs = Date.now() - killmailTime.getTime()
+                    const ageLimitMs = LOSS_AGE_LIMIT_DAYS * 24 * 60 * 60 * 1000
+
+                    if (ageMs > ageLimitMs) continue
+
                     let shipName = "Unknown Ship"
                     try {
                       const typeRes = await fetch(
@@ -88,7 +87,7 @@ export const SrpListPanel = ({
                       entry,
                       shipTypeId: km.victim.ship_type_id,
                       shipName,
-                      killmailTime: new Date(km.killmail_time),
+                      killmailTime,
                     })
                   }
                 }
@@ -104,14 +103,6 @@ export const SrpListPanel = ({
 
           for (const fleet of srpFleets) {
             if (!fleet.doctrine?.ships) continue
-
-            const fleetStart = new Date(fleet.scheduledAt)
-            const windowStart = new Date(fleetStart.getTime() - FLEET_TIME_WINDOW.BEFORE_MS)
-            const windowEnd = new Date(fleetStart.getTime() + FLEET_TIME_WINDOW.AFTER_MS)
-
-            if (loss.killmailTime < windowStart || loss.killmailTime > windowEnd) {
-              continue
-            }
 
             for (const ship of fleet.doctrine.ships) {
               if (ship.shipTypeId === loss.shipTypeId) {
@@ -154,23 +145,8 @@ export const SrpListPanel = ({
     fetchLosses()
   }, [characterIds, srpFleets, refreshKey, existingKillmailIds])
 
-  const handleSubmitClick = (
-    loss: EligibleLoss,
-    fleetId: string,
-    doctrineShipId: string,
-    fleetName: string
-  ) => {
-    setSelectedLoss(loss)
-    setSelectedFleetId(fleetId)
-    setSelectedDoctrineShipId(doctrineShipId)
-    setSelectedFleetName(fleetName)
-  }
-
   const handleDialogClose = () => {
     setSelectedLoss(null)
-    setSelectedFleetId(null)
-    setSelectedDoctrineShipId(null)
-    setSelectedFleetName(null)
   }
 
   const handleSuccess = () => {
@@ -256,9 +232,7 @@ export const SrpListPanel = ({
                 <EligibleLossCard
                   key={loss.killmailId}
                   loss={loss}
-                  onSubmit={(fleetId, doctrineShipId, fleetName) =>
-                    handleSubmitClick(loss, fleetId, doctrineShipId, fleetName)
-                  }
+                  onStartRequest={() => setSelectedLoss(loss)}
                 />
               ))}
             </motion.div>
@@ -309,9 +283,6 @@ export const SrpListPanel = ({
 
       <SrpSubmitDialog
         loss={selectedLoss}
-        fleetId={selectedFleetId}
-        doctrineShipId={selectedDoctrineShipId}
-        fleetName={selectedFleetName}
         onClose={handleDialogClose}
         onSuccess={handleSuccess}
       />
