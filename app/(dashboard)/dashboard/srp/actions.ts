@@ -19,11 +19,6 @@ export type ActionResult = {
   requestId?: string
 }
 
-const FLEET_TIME_WINDOW = {
-  BEFORE_MINUTES: 30,
-  AFTER_HOURS: 6,
-}
-
 export const submitSrpRequestAction = async (
   fleetId: string,
   killmailId: number,
@@ -64,19 +59,6 @@ export const submitSrpRequestAction = async (
 
   if (killmail.victim.ship_type_id !== doctrineShip.shipTypeId) {
     return { success: false, error: "Ship type does not match doctrine" }
-  }
-
-  const killmailTime = new Date(killmail.killmail_time)
-  const fleetStart = new Date(fleet.scheduledAt)
-  const windowStart = new Date(
-    fleetStart.getTime() - FLEET_TIME_WINDOW.BEFORE_MINUTES * 60 * 1000
-  )
-  const windowEnd = new Date(
-    fleetStart.getTime() + FLEET_TIME_WINDOW.AFTER_HOURS * 60 * 60 * 1000
-  )
-
-  if (killmailTime < windowStart || killmailTime > windowEnd) {
-    return { success: false, error: "Loss occurred outside the fleet time window" }
   }
 
   const doctrineFitting = doctrineShip.fitting as ParsedFitting

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Calendar, ExternalLink, Shield } from "lucide-react"
+import { Calendar, ExternalLink, FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { eveImageUrl } from "@/types/eve"
 import { Button } from "@/components/ui/button"
@@ -9,11 +9,7 @@ import type { EligibleLoss } from "@/types/srp"
 
 type EligibleLossCardProps = {
   loss: EligibleLoss
-  onSubmit: (
-    fleetId: string,
-    doctrineShipId: string,
-    fleetName: string
-  ) => void
+  onStartRequest: () => void
   className?: string
 }
 
@@ -38,7 +34,7 @@ const formatDate = (date: Date): string => {
 
 export const EligibleLossCard = ({
   loss,
-  onSubmit,
+  onStartRequest,
   className,
 }: EligibleLossCardProps) => {
   return (
@@ -48,8 +44,8 @@ export const EligibleLossCard = ({
         className
       )}
     >
-      <div className="flex items-start gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-eve-border bg-eve-void">
+      <div className="flex items-center gap-4">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-eve-border bg-eve-void">
           <Image
             src={eveImageUrl.type(loss.shipTypeId, 64)}
             alt={loss.shipName}
@@ -59,48 +55,41 @@ export const EligibleLossCard = ({
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div>
-              <h3 className="font-display text-base font-semibold text-eve-text">
-                {loss.shipName}
-              </h3>
-              <div className="flex items-center gap-2 text-sm text-eve-text-muted">
-                <span className="text-eve-cyan font-medium">{formatIsk(loss.iskValue)}</span>
-                <span>|</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(loss.killmailTime)}
-                </span>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-display text-base font-semibold text-eve-text truncate">
+              {loss.shipName}
+            </h3>
             <a
               href={`https://zkillboard.com/kill/${loss.killmailId}/`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-eve-text-muted hover:text-eve-cyan transition-colors"
+              className="text-eve-text-muted hover:text-eve-cyan transition-colors shrink-0"
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-3.5 w-3.5" />
             </a>
           </div>
-
-          <div className="space-y-2">
-            <p className="text-xs text-eve-text-muted">Eligible fleets:</p>
-            <div className="flex flex-wrap gap-2">
-              {loss.matchingFleets.map((fleet) => (
-                <Button
-                  key={fleet.fleetId}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onSubmit(fleet.fleetId, fleet.doctrineShipId, fleet.fleetName)}
-                  className="h-7 gap-1.5 border-eve-border bg-eve-void/50 text-xs text-eve-text hover:border-eve-cyan hover:bg-eve-cyan/10 hover:text-eve-cyan"
-                >
-                  <Shield className="h-3 w-3" />
-                  {fleet.fleetName}
-                </Button>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 text-sm text-eve-text-muted">
+            <span className="text-eve-cyan font-medium">{formatIsk(loss.iskValue)}</span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {formatDate(loss.killmailTime)}
+            </span>
+            <span>·</span>
+            <span className="text-eve-text-secondary">
+              {loss.matchingFleets.length} eligible fleet{loss.matchingFleets.length !== 1 && "s"}
+            </span>
           </div>
         </div>
+
+        <Button
+          size="sm"
+          onClick={onStartRequest}
+          className="shrink-0 gap-1.5 bg-eve-cyan text-eve-void hover:bg-eve-cyan/90"
+        >
+          <FileText className="h-4 w-4" />
+          Start Request
+        </Button>
       </div>
     </div>
   )
