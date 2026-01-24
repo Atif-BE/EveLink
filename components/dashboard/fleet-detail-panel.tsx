@@ -13,9 +13,19 @@ import {
   Play,
   CheckCircle,
   XCircle,
+  ShieldCheck,
+  ShieldX,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { eveImageUrl } from "@/types/eve"
 import { FleetStatusBadge } from "./fleet-status-badge"
 import { FleetRsvpList } from "./fleet-rsvp-list"
@@ -50,12 +60,12 @@ export const FleetDetailPanel = ({
   className,
 }: FleetDetailPanelProps) => {
   const [deleting, setDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   const handleDeleteFleet = async () => {
-    if (!confirm("Are you sure you want to delete this fleet?")) return
-
     setDeleting(true)
+    setShowDeleteDialog(false)
     await deleteFleetAction(fleet.id)
   }
 
@@ -68,197 +78,254 @@ export const FleetDetailPanel = ({
   const confirmedCount = fleet.rsvps.filter((r) => r.status === "confirmed").length
 
   return (
-    <div className={cn("space-y-6", className)}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <Link
-            href="/dashboard/fleets"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-eve-border bg-eve-void/50 text-eve-text-muted transition-colors hover:border-eve-cyan/50 hover:text-eve-cyan"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-display text-2xl font-bold text-eve-text">
-                {fleet.name}
-              </h1>
-              <FleetStatusBadge status={fleet.status as FleetStatus} />
-            </div>
-            {fleet.description && (
-              <p className="mt-1 text-sm text-eve-text-muted">
-                {fleet.description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {fleet.status === "scheduled" && (
-            <Button
-              variant="ghost"
-              onClick={() => handleStatusChange("active")}
-              disabled={isPending}
-              className="gap-2 text-eve-green hover:bg-eve-green/10 hover:text-eve-green"
+    <>
+      <div className={cn("space-y-6", className)}>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <Link
+              href="/dashboard/fleets"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-eve-border bg-eve-void/50 text-eve-text-muted transition-colors hover:border-eve-cyan/50 hover:text-eve-cyan"
             >
-              <Play className="h-4 w-4" />
-              Start Fleet
-            </Button>
-          )}
-          {fleet.status === "active" && (
-            <Button
-              variant="ghost"
-              onClick={() => handleStatusChange("completed")}
-              disabled={isPending}
-              className="gap-2 text-eve-text-secondary hover:bg-eve-void hover:text-eve-text"
-            >
-              <CheckCircle className="h-4 w-4" />
-              Complete
-            </Button>
-          )}
-          {(fleet.status === "scheduled" || fleet.status === "active") && (
-            <Button
-              variant="ghost"
-              onClick={() => handleStatusChange("cancelled")}
-              disabled={isPending}
-              className="gap-2 text-eve-yellow hover:bg-eve-yellow/10 hover:text-eve-yellow"
-            >
-              <XCircle className="h-4 w-4" />
-              Cancel
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            onClick={handleDeleteFleet}
-            disabled={deleting}
-            className="text-eve-red hover:bg-eve-red/10 hover:text-eve-red"
-          >
-            {deleting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Trash2 className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
-            <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
-              Fleet Details
-            </h2>
-
-            <div className="space-y-4">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
-                  <Calendar className="h-5 w-5 text-eve-cyan" />
-                </div>
-                <div>
-                  <p className="text-xs text-eve-text-muted">Scheduled Time</p>
-                  <p className="text-sm font-medium text-eve-text">
-                    {formatDate(fleet.scheduledAt)}
-                  </p>
-                </div>
+                <h1 className="font-display text-2xl font-bold text-eve-text">
+                  {fleet.name}
+                </h1>
+                <FleetStatusBadge status={fleet.status as FleetStatus} />
               </div>
-
-              <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 overflow-hidden rounded-lg border border-eve-border">
-                  <Image
-                    src={eveImageUrl.character(fleet.fcCharacterId, 64)}
-                    alt={fleet.fcCharacterName}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-xs text-eve-text-muted">Fleet Commander</p>
-                  <p className="text-sm font-medium text-eve-text">
-                    {fleet.fcCharacterName}
-                  </p>
-                </div>
-              </div>
-
-              {fleet.doctrine && (
-                <Link
-                  href={`/dashboard/doctrines/${fleet.doctrine.id}`}
-                  className="group flex items-center gap-3 rounded-lg border border-eve-border/50 bg-eve-void/30 p-3 transition-colors hover:border-eve-cyan/50"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-cyan/10">
-                    <BookOpen className="h-5 w-5 text-eve-cyan" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-eve-text-muted">Doctrine</p>
-                    <p className="text-sm font-medium text-eve-text group-hover:text-eve-cyan">
-                      {fleet.doctrine.name}
-                    </p>
-                  </div>
-                </Link>
-              )}
-
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
-                  <Users className="h-5 w-5 text-eve-cyan" />
-                </div>
-                <div>
-                  <p className="text-xs text-eve-text-muted">Confirmed RSVPs</p>
-                  <p className="text-sm font-medium text-eve-text">
-                    {confirmedCount} pilot{confirmedCount !== 1 ? "s" : ""}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {(fleet.status === "scheduled" || fleet.status === "active") && (
-            <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
-              <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
-                Your RSVP
-              </h2>
-              {currentRsvp ? (
-                <div className="mb-4 rounded-lg border border-eve-border/50 bg-eve-void/30 p-3">
-                  <p className="text-sm text-eve-text">
-                    Status:{" "}
-                    <span
-                      className={cn(
-                        "font-medium",
-                        currentRsvp.status === "confirmed" && "text-eve-green",
-                        currentRsvp.status === "tentative" && "text-eve-yellow",
-                        currentRsvp.status === "declined" && "text-eve-red"
-                      )}
-                    >
-                      {currentRsvp.status.charAt(0).toUpperCase() +
-                        currentRsvp.status.slice(1)}
-                    </span>
-                  </p>
-                  {currentRsvp.shipName && (
-                    <p className="text-sm text-eve-text-muted">
-                      Ship: {currentRsvp.shipName}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="mb-4 text-sm text-eve-text-muted">
-                  You have not RSVPed yet.
+              {fleet.description && (
+                <p className="mt-1 text-sm text-eve-text-muted">
+                  {fleet.description}
                 </p>
               )}
-              <RsvpDialog
-                fleetId={fleet.id}
-                currentRsvp={currentRsvp}
-                doctrineShips={fleet.doctrine?.ships ?? null}
-              />
             </div>
-          )}
+          </div>
 
-          <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
-            <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
-              RSVPs ({fleet.rsvps.length})
-            </h2>
-            <FleetRsvpList rsvps={fleet.rsvps} />
+          <div className="flex items-center gap-2">
+            {fleet.status === "scheduled" && (
+              <Button
+                variant="ghost"
+                onClick={() => handleStatusChange("active")}
+                disabled={isPending}
+                className="gap-2 text-eve-green hover:bg-eve-green/10 hover:text-eve-green"
+              >
+                <Play className="h-4 w-4" />
+                Start Fleet
+              </Button>
+            )}
+            {fleet.status === "active" && (
+              <Button
+                variant="ghost"
+                onClick={() => handleStatusChange("completed")}
+                disabled={isPending}
+                className="gap-2 text-eve-text-secondary hover:bg-eve-void hover:text-eve-text"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Complete
+              </Button>
+            )}
+            {(fleet.status === "scheduled" || fleet.status === "active") && (
+              <Button
+                variant="ghost"
+                onClick={() => handleStatusChange("cancelled")}
+                disabled={isPending}
+                className="gap-2 text-eve-yellow hover:bg-eve-yellow/10 hover:text-eve-yellow"
+              >
+                <XCircle className="h-4 w-4" />
+                Cancel
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleting}
+              className="text-eve-red hover:bg-eve-red/10 hover:text-eve-red"
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
+              <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
+                Fleet Details
+              </h2>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
+                    <Calendar className="h-5 w-5 text-eve-cyan" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-eve-text-muted">Scheduled Time</p>
+                    <p className="text-sm font-medium text-eve-text">
+                      {formatDate(fleet.scheduledAt)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="relative h-10 w-10 overflow-hidden rounded-lg border border-eve-border">
+                    <Image
+                      src={eveImageUrl.character(fleet.fcCharacterId, 64)}
+                      alt={fleet.fcCharacterName}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs text-eve-text-muted">Fleet Commander</p>
+                    <p className="text-sm font-medium text-eve-text">
+                      {fleet.fcCharacterName}
+                    </p>
+                  </div>
+                </div>
+
+                {fleet.doctrine && (
+                  <Link
+                    href={`/dashboard/doctrines/${fleet.doctrine.id}`}
+                    className="group flex items-center gap-3 rounded-lg border border-eve-border/50 bg-eve-void/30 p-3 transition-colors hover:border-eve-cyan/50"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-cyan/10">
+                      <BookOpen className="h-5 w-5 text-eve-cyan" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-eve-text-muted">Doctrine</p>
+                      <p className="text-sm font-medium text-eve-text group-hover:text-eve-cyan">
+                        {fleet.doctrine.name}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-void/50">
+                    <Users className="h-5 w-5 text-eve-cyan" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-eve-text-muted">Confirmed RSVPs</p>
+                    <p className="text-sm font-medium text-eve-text">
+                      {confirmedCount} pilot{confirmedCount !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      fleet.srpEligible ? "bg-eve-green/10" : "bg-eve-void/50"
+                    )}
+                  >
+                    {fleet.srpEligible ? (
+                      <ShieldCheck className="h-5 w-5 text-eve-green" />
+                    ) : (
+                      <ShieldX className="h-5 w-5 text-eve-text-muted" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-eve-text-muted">SRP Status</p>
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        fleet.srpEligible ? "text-eve-green" : "text-eve-text-muted"
+                      )}
+                    >
+                      {fleet.srpEligible ? "SRP Eligible" : "Not Eligible"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {(fleet.status === "scheduled" || fleet.status === "active") && (
+              <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
+                <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
+                  Your RSVP
+                </h2>
+                {currentRsvp ? (
+                  <div className="mb-4 rounded-lg border border-eve-border/50 bg-eve-void/30 p-3">
+                    <p className="text-sm text-eve-text">
+                      Status:{" "}
+                      <span
+                        className={cn(
+                          "font-medium",
+                          currentRsvp.status === "confirmed" && "text-eve-green",
+                          currentRsvp.status === "tentative" && "text-eve-yellow",
+                          currentRsvp.status === "declined" && "text-eve-red"
+                        )}
+                      >
+                        {currentRsvp.status.charAt(0).toUpperCase() +
+                          currentRsvp.status.slice(1)}
+                      </span>
+                    </p>
+                    {currentRsvp.shipName && (
+                      <p className="text-sm text-eve-text-muted">
+                        Ship: {currentRsvp.shipName}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mb-4 text-sm text-eve-text-muted">
+                    You have not RSVPed yet.
+                  </p>
+                )}
+                <RsvpDialog
+                  fleetId={fleet.id}
+                  currentRsvp={currentRsvp}
+                  doctrineShips={fleet.doctrine?.ships ?? null}
+                />
+              </div>
+            )}
+
+            <div className="rounded-xl border border-eve-border bg-eve-deep p-4">
+              <h2 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-eve-text-muted">
+                RSVPs ({fleet.rsvps.length})
+              </h2>
+              <FleetRsvpList rsvps={fleet.rsvps} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="border-eve-border bg-eve-deep sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-eve-text">
+              Delete Fleet
+            </DialogTitle>
+            <DialogDescription className="text-eve-text-muted">
+              Are you sure you want to delete &quot;{fleet.name}&quot;? This action
+              cannot be undone and will remove all RSVPs.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="ghost"
+              onClick={() => setShowDeleteDialog(false)}
+              className="text-eve-text-secondary hover:bg-eve-void hover:text-eve-text"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteFleet}
+              className="bg-eve-red text-white hover:bg-eve-red/90"
+            >
+              Delete Fleet
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

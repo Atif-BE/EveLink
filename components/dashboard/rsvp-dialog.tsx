@@ -35,10 +35,30 @@ type RsvpDialogProps = {
   trigger?: React.ReactNode
 }
 
-const statusOptions: { value: RsvpStatus; label: string; icon: typeof Check }[] = [
-  { value: "confirmed", label: "Confirmed", icon: Check },
-  { value: "tentative", label: "Tentative", icon: HelpCircle },
-  { value: "declined", label: "Declined", icon: X },
+const statusOptions: {
+  value: RsvpStatus
+  label: string
+  icon: typeof Check
+  selectedClass: string
+}[] = [
+  {
+    value: "confirmed",
+    label: "Confirmed",
+    icon: Check,
+    selectedClass: "border-eve-green bg-eve-green/10 text-eve-green",
+  },
+  {
+    value: "tentative",
+    label: "Tentative",
+    icon: HelpCircle,
+    selectedClass: "border-eve-yellow bg-eve-yellow/10 text-eve-yellow",
+  },
+  {
+    value: "declined",
+    label: "Declined",
+    icon: X,
+    selectedClass: "border-eve-red bg-eve-red/10 text-eve-red",
+  },
 ]
 
 export const RsvpDialog = ({
@@ -56,6 +76,15 @@ export const RsvpDialog = ({
   )
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen)
+    if (isOpen) {
+      setStatus((currentRsvp?.status as RsvpStatus) ?? "confirmed")
+      setSelectedShip(currentRsvp?.shipTypeId?.toString() ?? "")
+      setError(null)
+    }
+  }
 
   const handleSubmit = () => {
     setError(null)
@@ -88,8 +117,35 @@ export const RsvpDialog = ({
     })
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent, optionValue: RsvpStatus) => {
+    const currentIndex = statusOptions.findIndex((o) => o.value === status)
+    let newIndex = currentIndex
+
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        e.preventDefault()
+        newIndex = (currentIndex + 1) % statusOptions.length
+        break
+      case "ArrowLeft":
+      case "ArrowUp":
+        e.preventDefault()
+        newIndex = (currentIndex - 1 + statusOptions.length) % statusOptions.length
+        break
+      case " ":
+      case "Enter":
+        e.preventDefault()
+        setStatus(optionValue)
+        return
+    }
+
+    if (newIndex !== currentIndex) {
+      setStatus(statusOptions[newIndex].value)
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button className="gap-2 bg-eve-cyan text-eve-void hover:bg-eve-cyan/90">
@@ -109,8 +165,14 @@ export const RsvpDialog = ({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm text-eve-text-secondary">Status</label>
-            <div className="grid grid-cols-3 gap-2">
+            <span id="rsvp-status-label" className="text-sm text-eve-text-secondary">
+              Status
+            </span>
+            <div
+              role="radiogroup"
+              aria-labelledby="rsvp-status-label"
+              className="grid grid-cols-3 gap-2"
+            >
               {statusOptions.map((option) => {
                 const Icon = option.icon
                 const isSelected = status === option.value
@@ -118,15 +180,15 @@ export const RsvpDialog = ({
                   <button
                     key={option.value}
                     type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={isSelected ? 0 : -1}
                     onClick={() => setStatus(option.value)}
+                    onKeyDown={(e) => handleKeyDown(e, option.value)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all",
+                      "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all focus:outline-none focus:ring-2 focus:ring-eve-cyan focus:ring-offset-2 focus:ring-offset-eve-deep",
                       isSelected
-                        ? option.value === "confirmed"
-                          ? "border-eve-green bg-eve-green/10 text-eve-green"
-                          : option.value === "tentative"
-                            ? "border-eve-yellow bg-eve-yellow/10 text-eve-yellow"
-                            : "border-eve-red bg-eve-red/10 text-eve-red"
+                        ? option.selectedClass
                         : "border-eve-border bg-eve-void/50 text-eve-text-muted hover:border-eve-border hover:bg-eve-void"
                     )}
                   >
@@ -140,11 +202,14 @@ export const RsvpDialog = ({
 
           {doctrineShips && doctrineShips.length > 0 && status !== "declined" && (
             <div className="space-y-2">
-              <label className="text-sm text-eve-text-secondary">
+              <label htmlFor="ship-select" className="text-sm text-eve-text-secondary">
                 Ship Selection
               </label>
               <Select value={selectedShip} onValueChange={setSelectedShip}>
-                <SelectTrigger className="border-eve-border bg-eve-void text-eve-text focus:ring-eve-cyan">
+                <SelectTrigger
+                  id="ship-select"
+                  className="border-eve-border bg-eve-void text-eve-text focus:ring-eve-cyan"
+                >
                   <SelectValue placeholder="Select ship..." />
                 </SelectTrigger>
                 <SelectContent className="border-eve-border bg-eve-deep">
@@ -171,7 +236,11 @@ export const RsvpDialog = ({
             </div>
           )}
 
-          {error && <p className="text-sm text-eve-red">{error}</p>}
+          {error && (
+            <p role="alert" className="text-sm text-eve-red">
+              {error}
+            </p>
+          )}
 
           <div className="flex justify-between gap-3">
             {currentRsvp && (

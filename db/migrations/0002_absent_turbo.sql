@@ -1,0 +1,1 @@
+ALTER TABLE "fleets" ADD COLUMN "srp_eligible" boolean DEFAULT false NOT NULL;

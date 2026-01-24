@@ -24,6 +24,7 @@ export const createFleetAction = async (
   const fcCharacterId = formData.get("fcCharacterId") as string
   const fcCharacterName = formData.get("fcCharacterName") as string
   const scheduledAt = formData.get("scheduledAt") as string
+  const srpEligible = formData.get("srpEligible") === "on"
 
   if (!name?.trim()) {
     return { success: false, error: "Name is required" }
@@ -46,6 +47,7 @@ export const createFleetAction = async (
     fcCharacterName,
     createdById: session.characterId,
     scheduledAt: new Date(scheduledAt),
+    srpEligible,
     status: "scheduled",
   })
 

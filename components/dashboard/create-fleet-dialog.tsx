@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useRef, useState } from "react"
+import { useActionState, useRef, useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Plus, Loader2, X } from "lucide-react"
 import {
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -50,11 +51,32 @@ export const CreateFleetDialog = ({
     name: string
   } | null>(null)
   const [showFcDropdown, setShowFcDropdown] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const formRef = useRef<HTMLFormElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const filteredMembers = allianceMembers.filter((m) =>
     m.name.toLowerCase().includes(fcSearch.toLowerCase())
-  )
+  ).slice(0, 10)
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(e.target as Node) &&
+      inputRef.current &&
+      !inputRef.current.contains(e.target as Node)
+    ) {
+      setShowFcDropdown(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (showFcDropdown) {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showFcDropdown, handleClickOutside])
 
   const wrappedAction = async (
     prevState: ActionResult,
@@ -76,11 +98,41 @@ export const CreateFleetDialog = ({
     setSelectedFc(member)
     setFcSearch(member.name)
     setShowFcDropdown(false)
+    setHighlightedIndex(-1)
   }
 
   const handleClearFc = () => {
     setSelectedFc(null)
     setFcSearch("")
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showFcDropdown || filteredMembers.length === 0) return
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault()
+        setHighlightedIndex((prev) =>
+          prev < filteredMembers.length - 1 ? prev + 1 : 0
+        )
+        break
+      case "ArrowUp":
+        e.preventDefault()
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredMembers.length - 1
+        )
+        break
+      case "Enter":
+        e.preventDefault()
+        if (highlightedIndex >= 0) {
+          handleSelectFc(filteredMembers[highlightedIndex])
+        }
+        break
+      case "Escape":
+        setShowFcDropdown(false)
+        setHighlightedIndex(-1)
+        break
+    }
   }
 
   return (
@@ -142,7 +194,9 @@ export const CreateFleetDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-eve-text-secondary">Fleet Commander</Label>
+            <Label htmlFor="fc-search" className="text-eve-text-secondary">
+              Fleet Commander
+            </Label>
             <div className="relative">
               <div className="relative">
                 {selectedFc && (
@@ -155,14 +209,26 @@ export const CreateFleetDialog = ({
                   />
                 )}
                 <Input
+                  ref={inputRef}
+                  id="fc-search"
                   value={fcSearch}
                   onChange={(e) => {
                     setFcSearch(e.target.value)
                     setShowFcDropdown(true)
+                    setHighlightedIndex(-1)
                     if (!e.target.value) setSelectedFc(null)
                   }}
                   onFocus={() => setShowFcDropdown(true)}
+                  onKeyDown={handleKeyDown}
                   placeholder="Search alliance members..."
+                  role="combobox"
+                  aria-expanded={showFcDropdown && !selectedFc && fcSearch.length > 0}
+                  aria-haspopup="listbox"
+                  aria-controls="fc-listbox"
+                  aria-activedescendant={
+                    highlightedIndex >= 0 ? `fc-option-${filteredMembers[highlightedIndex]?.id}` : undefined
+                  }
+                  autoComplete="off"
                   className={cn(
                     "border-eve-border bg-eve-void text-eve-text placeholder:text-eve-text-muted focus-visible:ring-eve-cyan",
                     selectedFc && "pl-10"
@@ -173,20 +239,36 @@ export const CreateFleetDialog = ({
                     type="button"
                     onClick={handleClearFc}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-eve-text-muted hover:text-eve-text"
+                    aria-label="Clear selection"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
               {showFcDropdown && fcSearch && !selectedFc && (
-                <div className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border border-eve-border bg-eve-deep shadow-lg">
+                <div
+                  ref={dropdownRef}
+                  id="fc-listbox"
+                  role="listbox"
+                  aria-label="Fleet commander options"
+                  className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border border-eve-border bg-eve-deep shadow-lg"
+                >
                   {filteredMembers.length > 0 ? (
-                    filteredMembers.slice(0, 10).map((member) => (
+                    filteredMembers.map((member, index) => (
                       <button
                         key={member.id}
+                        id={`fc-option-${member.id}`}
                         type="button"
+                        role="option"
+                        aria-selected={highlightedIndex === index}
                         onClick={() => handleSelectFc(member)}
-                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-eve-void/50"
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        className={cn(
+                          "flex w-full items-center gap-3 px-3 py-2 text-left",
+                          highlightedIndex === index
+                            ? "bg-eve-cyan/20 text-eve-text"
+                            : "hover:bg-eve-void/50"
+                        )}
                       >
                         <Image
                           src={eveImageUrl.character(member.id, 32)}
@@ -232,6 +314,20 @@ export const CreateFleetDialog = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="srpEligible"
+              name="srpEligible"
+              className="border-eve-border data-[state=checked]:border-eve-cyan data-[state=checked]:bg-eve-cyan data-[state=checked]:text-eve-void"
+            />
+            <Label
+              htmlFor="srpEligible"
+              className="cursor-pointer text-sm font-normal text-eve-text-secondary"
+            >
+              SRP Eligible
+            </Label>
           </div>
 
           {state.error && <p className="text-sm text-eve-red">{state.error}</p>}

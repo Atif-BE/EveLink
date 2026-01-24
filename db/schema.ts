@@ -108,6 +108,7 @@ export const fleets = pgTable("fleets", {
   fcCharacterName: text("fc_character_name").notNull(),
   createdById: integer("created_by_id").notNull(),
   scheduledAt: timestamp("scheduled_at").notNull(),
+  srpEligible: boolean("srp_eligible").default(false).notNull(),
   status: text("status").default("scheduled").notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
