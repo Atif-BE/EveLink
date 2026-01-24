@@ -4,12 +4,13 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { LayoutDashboard, BookOpen } from "lucide-react"
+import { LayoutDashboard, BookOpen, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/doctrines", label: "Doctrines", icon: BookOpen },
+  { href: "/dashboard/fleets", label: "Fleets", icon: Users },
 ]
 
 const containerVariants = {

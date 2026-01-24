@@ -1,5 +1,12 @@
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm"
-import type { users, characters, doctrines, doctrineShips } from "@/db/schema"
+import type {
+  users,
+  characters,
+  doctrines,
+  doctrineShips,
+  fleets,
+  fleetRsvps,
+} from "@/db/schema"
 
 // User types
 export type User = InferSelectModel<typeof users>
@@ -39,4 +46,15 @@ export type DoctrineWithShips = Doctrine & {
 
 export type DoctrineShipWithDoctrine = DoctrineShip & {
   doctrine: Doctrine
+}
+
+export type Fleet = InferSelectModel<typeof fleets>
+export type NewFleet = InferInsertModel<typeof fleets>
+
+export type FleetRsvp = InferSelectModel<typeof fleetRsvps>
+export type NewFleetRsvp = InferInsertModel<typeof fleetRsvps>
+
+export type FleetWithRelations = Fleet & {
+  doctrine: DoctrineWithShips | null
+  rsvps: FleetRsvp[]
 }
