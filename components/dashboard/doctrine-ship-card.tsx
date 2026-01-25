@@ -35,7 +35,6 @@ export const DoctrineShipCard = ({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback for older browsers
     }
   }
 

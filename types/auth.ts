@@ -1,5 +1,3 @@
-// EVE SSO OAuth types
-
 export type TokenResponse = {
   access_token: string
   refresh_token: string

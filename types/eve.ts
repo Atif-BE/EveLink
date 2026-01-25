@@ -1,6 +1,3 @@
-// Display types for EVE Online entities
-// These are simplified versions for UI rendering
-
 export type CharacterDisplay = {
   id: number
   name: string

@@ -1,5 +1,3 @@
-// Session data structure for iron-session
-
 export type SessionData = {
   isLoggedIn: boolean
   userId: string

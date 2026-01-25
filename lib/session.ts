@@ -2,7 +2,6 @@ import { getIronSession, SessionOptions } from "iron-session"
 import { cookies } from "next/headers"
 import type { SessionData } from "@/types/session"
 
-// Re-export type for backward compatibility
 export type { SessionData } from "@/types/session"
 
 const defaultSession: SessionData = {

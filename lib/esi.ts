@@ -111,7 +111,6 @@ export async function getCharacterAffiliation(
   return affiliations[0]
 }
 
-// Cache for static universe data (rarely changes)
 let racesCache: RaceInfo[] | null = null
 let bloodlinesCache: BloodlineInfo[] | null = null
 let ancestriesCache: AncestryInfo[] | null = null

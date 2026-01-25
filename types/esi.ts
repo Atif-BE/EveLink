@@ -1,5 +1,3 @@
-// ESI API response types - match the EVE ESI specification
-
 export type CharacterInfo = {
   alliance_id?: number
   birthday: string
@@ -42,7 +40,6 @@ export type CharacterAffiliation = {
   corporation_id: number
 }
 
-// Static universe data types
 export type RaceInfo = {
   race_id: number
   name: string

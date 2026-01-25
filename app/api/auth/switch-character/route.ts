@@ -17,17 +17,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid character ID" }, { status: 400 })
   }
 
-  // Verify the character belongs to this user
   const character = await getCharacterById(characterId)
 
   if (!character || character.userId !== session.userId) {
     return NextResponse.json({ error: "Character not found" }, { status: 404 })
   }
 
-  // Get fresh affiliation data
   const affiliation = await getCharacterAffiliation(characterId)
 
-  // Update session with new active character
   session.characterId = character.id
   session.characterName = character.name
   session.corporationId = affiliation.corporation_id
