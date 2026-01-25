@@ -2,6 +2,7 @@ export {
   createUser,
   getUserById,
   updateUserPrimaryCharacter,
+  getUserPrimaryCharacterId,
 } from "./users"
 
 export {

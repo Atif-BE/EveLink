@@ -24,3 +24,11 @@ export const updateUserPrimaryCharacter = async (
     .set({ primaryCharacterId: characterId, updatedAt: new Date() })
     .where(eq(users.id, userId))
 }
+
+export const getUserPrimaryCharacterId = async (userId: string) => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { primaryCharacterId: true },
+  })
+  return user?.primaryCharacterId ?? null
+}
