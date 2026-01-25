@@ -12,6 +12,7 @@ import type {
   UniverseTypeWithSkills,
   CharacterSkillsResponse,
   SkillRequirement,
+  SkillQueueEntry,
 } from "@/types/esi"
 import type { ParsedFitting } from "@/types/fitting"
 import type { KillmailDisplay } from "@/types/eve"
@@ -34,6 +35,7 @@ export type {
   UniverseTypeWithSkills,
   CharacterSkillsResponse,
   SkillRequirement,
+  SkillQueueEntry,
 } from "@/types/esi"
 
 export type { KillmailDisplay } from "@/types/eve"
@@ -597,6 +599,29 @@ export const getCharacterSkills = async (
   } catch {
     return null
   }
+}
+
+export const getCharacterSkillQueue = async (
+  characterId: number,
+  accessToken: string
+): Promise<SkillQueueEntry[]> => {
+  try {
+    return await fetchESIAuth<SkillQueueEntry[]>(
+      `/characters/${characterId}/skillqueue/`,
+      accessToken
+    )
+  } catch {
+    return []
+  }
+}
+
+export type CloneState = "omega" | "alpha" | "unknown"
+
+export const inferCloneState = (skillQueue: SkillQueueEntry[]): CloneState => {
+  if (skillQueue.length === 0) return "unknown"
+  const hasActiveTraining = skillQueue.some((entry) => entry.finish_date)
+  if (hasActiveTraining) return "omega"
+  return "alpha"
 }
 
 export const getFittingSkillRequirements = async (

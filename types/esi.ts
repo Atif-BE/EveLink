@@ -149,3 +149,14 @@ export type CharacterSkillsResponse = {
   total_sp: number
   unallocated_sp?: number
 }
+
+export type SkillQueueEntry = {
+  skill_id: number
+  finish_date?: string
+  finished_level: number
+  queue_position: number
+  start_date?: string
+  level_start_sp?: number
+  level_end_sp?: number
+  training_start_sp?: number
+}
