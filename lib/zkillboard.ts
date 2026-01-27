@@ -1,4 +1,4 @@
-import type { ZKillboardEntry } from "@/types/zkillboard"
+import type { ZKillboardEntry } from "@/types"
 
 const ZKILLBOARD_BASE = "https://zkillboard.com/api"
 const USER_AGENT = `EveLink/0.1.0 (${process.env.EVE_CONTACT_EMAIL || "contact@example.com"})`

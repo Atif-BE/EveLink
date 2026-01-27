@@ -24,12 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type DoctrineWithShips, type Character } from "@/types"
 import {
   createFleetAction,
   type ActionResult,
 } from "@/app/(dashboard)/dashboard/fleets/actions"
-import type { DoctrineWithShips, Character } from "@/types/db"
 
 type CreateFleetDialogProps = {
   doctrines: DoctrineWithShips[]

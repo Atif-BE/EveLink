@@ -5,14 +5,18 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Copy, Check, Upload, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import {
+  eveImageUrl,
+  type ParsedFitting,
+  type SkillRequirement,
+  type CharacterFlyability,
+  type DoctrineShipWithDoctrine,
+  type ShipRole,
+} from "@/types"
 import { RoleBadge } from "@/components/eve/role-badge"
 import { FittingDisplay } from "./fitting-display"
 import { SkillSidebar } from "./skill-sidebar"
 import { saveFittingToEve } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
-import type { DoctrineShipWithDoctrine } from "@/types/db"
-import type { ParsedFitting, ShipRole } from "@/types/fitting"
-import type { SkillRequirement, CharacterFlyability } from "@/lib/esi"
 
 type ShipDetailViewProps = {
   ship: DoctrineShipWithDoctrine

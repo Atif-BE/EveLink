@@ -1,6 +1,6 @@
 import { CheckCircle, AlertCircle, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { FitValidationStatus } from "@/types/srp"
+import type { FitValidationStatus } from "@/types"
 
 type FitValidationBadgeProps = {
   validation: FitValidationStatus

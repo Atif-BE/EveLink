@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import type { ParsedFitting, FittingModule } from "@/types/fitting"
+import type { ParsedFitting, FittingModule } from "@/types"
 
 type SlotSectionProps = {
   title: string

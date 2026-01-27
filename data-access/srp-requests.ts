@@ -1,7 +1,7 @@
 import { eq, and, desc, inArray } from "drizzle-orm"
 import { db } from "@/db"
 import { srpRequests, fleets } from "@/db/schema"
-import type { NewSrpRequest } from "@/types/db"
+import type { NewSrpRequest } from "@/types"
 
 export const getSrpRequestsByCharacterId = async (characterId: number) => {
   return db.query.srpRequests.findMany({

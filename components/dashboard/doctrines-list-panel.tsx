@@ -2,7 +2,7 @@ import { BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { DoctrineCard } from "./doctrine-card"
 import { CreateDoctrineDialog } from "./create-doctrine-dialog"
-import type { DoctrineWithShips } from "@/types/db"
+import type { DoctrineWithShips } from "@/types"
 
 type DoctrinesListPanelProps = {
   doctrines: DoctrineWithShips[]

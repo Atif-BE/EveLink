@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm"
 import { db } from "@/db"
 import { fleetRsvps } from "@/db/schema"
-import type { NewFleetRsvp } from "@/types/db"
+import type { NewFleetRsvp } from "@/types"
 
 export const getRsvpsByFleetId = async (fleetId: string) => {
   return db.query.fleetRsvps.findMany({

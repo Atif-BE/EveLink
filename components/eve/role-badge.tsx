@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { ShipRole } from "@/types/fitting"
+import type { ShipRole } from "@/types"
 
 const roleColors: Record<ShipRole, string> = {
   DPS: "bg-eve-red/20 text-eve-red border-eve-red/30",

@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { SHIP_ROLES, type ShipRole } from "@/types/fitting"
+import { SHIP_ROLES, type ShipRole } from "@/types"
 import {
   addShipAction,
   type ActionResult,

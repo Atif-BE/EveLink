@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { CloneState } from "@/lib/esi"
+import type { CloneState } from "@/types"
 
 type CloneStateBadgeProps = {
   state: CloneState

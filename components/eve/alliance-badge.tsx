@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { AllianceDisplay, eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type AllianceDisplay } from "@/types"
 
 type AllianceBadgeProps = {
   alliance: AllianceDisplay

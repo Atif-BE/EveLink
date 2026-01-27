@@ -3,9 +3,8 @@
 import Image from "next/image"
 import { Calendar, ExternalLink, FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type EligibleLoss } from "@/types"
 import { Button } from "@/components/ui/button"
-import type { EligibleLoss } from "@/types/srp"
 
 type EligibleLossCardProps = {
   loss: EligibleLoss

@@ -1,9 +1,7 @@
 import Image from "next/image"
 import { Check, X, HelpCircle, Ship } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
-import type { FleetRsvp } from "@/types/db"
-import type { RsvpStatus } from "@/types/fleet"
+import { eveImageUrl, type FleetRsvp, type RsvpStatus } from "@/types"
 
 type FleetRsvpListProps = {
   rsvps: FleetRsvp[]

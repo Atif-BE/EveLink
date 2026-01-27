@@ -3,8 +3,7 @@
 import Image from "next/image"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
-import type { KillmailDisplay } from "@/types/eve"
+import { eveImageUrl, type KillmailDisplay } from "@/types"
 
 type KillmailItemProps = {
   killmail: KillmailDisplay

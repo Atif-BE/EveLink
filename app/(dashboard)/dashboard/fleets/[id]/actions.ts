@@ -12,7 +12,7 @@ import {
   deleteRsvp,
   getRsvpByFleetAndCharacter,
 } from "@/data-access"
-import type { FleetStatus, RsvpStatus } from "@/types/fleet"
+import type { FleetStatus, RsvpStatus } from "@/types"
 
 export type ActionResult = {
   success: boolean

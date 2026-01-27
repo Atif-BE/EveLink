@@ -2,7 +2,7 @@ import { Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { FleetCard } from "./fleet-card"
 import { CreateFleetDialog } from "./create-fleet-dialog"
-import type { FleetWithRelations, DoctrineWithShips, Character } from "@/types/db"
+import type { FleetWithRelations, DoctrineWithShips, Character } from "@/types"
 
 type FleetsListPanelProps = {
   fleets: FleetWithRelations[]

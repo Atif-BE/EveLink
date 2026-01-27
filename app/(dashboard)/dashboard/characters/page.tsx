@@ -12,8 +12,7 @@ import {
 import { getValidAccessToken } from "@/lib/tokens"
 import { CharactersListPanel } from "@/components/dashboard/characters-list-panel"
 import type { CharacterOverviewData } from "@/components/dashboard/character-overview-card"
-import type { CorporationDisplay, AllianceDisplay } from "@/types/eve"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type CorporationDisplay, type AllianceDisplay } from "@/types"
 
 const fetchCharacterOverviewData = async (
   character: Awaited<ReturnType<typeof getCharactersByUserId>>[0]

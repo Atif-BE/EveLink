@@ -15,12 +15,12 @@ import { QuickStatsPanel } from "@/components/dashboard/quick-stats-panel"
 import { CorporationOverviewCard } from "@/components/dashboard/corporation-overview-card"
 import { WealthCard } from "@/components/dashboard/wealth-card"
 import { KillmailsPanel } from "@/components/dashboard/killmails-panel"
-import { eveImageUrl } from "@/types/eve"
-import type {
-  CharacterDisplay,
-  CorporationDisplay,
-  AllianceDisplay,
-} from "@/types/eve"
+import {
+  eveImageUrl,
+  type CharacterDisplay,
+  type CorporationDisplay,
+  type AllianceDisplay,
+} from "@/types"
 
 export default async function DashboardPage() {
   const session = await getSession()

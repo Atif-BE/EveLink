@@ -2,10 +2,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { Users, Calendar, ChevronRight, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type FleetWithRelations, type FleetStatus } from "@/types"
 import { FleetStatusBadge } from "./fleet-status-badge"
-import type { FleetWithRelations } from "@/types/db"
-import type { FleetStatus } from "@/types/fleet"
 
 type FleetCardProps = {
   fleet: FleetWithRelations

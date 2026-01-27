@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { CorporationDisplay, eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type CorporationDisplay } from "@/types"
 
 type CorporationBadgeProps = {
   corporation: CorporationDisplay

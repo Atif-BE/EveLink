@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type FleetWithRelations, type FleetRsvp, type FleetStatus } from "@/types"
 import { FleetStatusBadge } from "./fleet-status-badge"
 import { FleetRsvpList } from "./fleet-rsvp-list"
 import { RsvpDialog } from "./rsvp-dialog"
@@ -34,8 +34,6 @@ import {
   deleteFleetAction,
   updateFleetStatusAction,
 } from "@/app/(dashboard)/dashboard/fleets/[id]/actions"
-import type { FleetWithRelations, FleetRsvp } from "@/types/db"
-import type { FleetStatus } from "@/types/fleet"
 
 type FleetDetailPanelProps = {
   fleet: FleetWithRelations

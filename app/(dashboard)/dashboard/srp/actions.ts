@@ -10,8 +10,7 @@ import {
 } from "@/data-access"
 import { getKillmailDetails, getTypeName, getTypeIdsByNames } from "@/lib/esi"
 import { compareFittings } from "@/lib/fit-comparison"
-import type { ParsedFitting } from "@/types/fitting"
-import type { KillmailItem } from "@/types/esi"
+import type { ParsedFitting, KillmailItem } from "@/types"
 
 export type ActionResult = {
   success: boolean

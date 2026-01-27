@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { CharacterDisplay, CorporationDisplay, AllianceDisplay } from "@/types/eve"
+import type { CharacterDisplay, CorporationDisplay, AllianceDisplay } from "@/types"
 import { CharacterPortrait } from "./character-portrait"
 import { CorporationBadge } from "./corporation-badge"
 import { AllianceBadge } from "./alliance-badge"

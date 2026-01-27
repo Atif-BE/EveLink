@@ -1,7 +1,7 @@
 import { eq, desc } from "drizzle-orm"
 import { db } from "@/db"
 import { doctrineShips } from "@/db/schema"
-import type { NewDoctrineShip } from "@/types/db"
+import type { NewDoctrineShip } from "@/types"
 
 export const addShipToDoctrine = async (data: NewDoctrineShip) => {
   const [ship] = await db.insert(doctrineShips).values(data).returning()

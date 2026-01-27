@@ -157,3 +157,24 @@ export type SkillQueueEntry = {
   level_end_sp?: number
   training_start_sp?: number
 }
+
+export type CharacterWealth = {
+  characterId: number
+  characterName: string
+  balance: number | null
+}
+
+export type AggregateWealth = {
+  total: number
+  characters: CharacterWealth[]
+  incomplete: boolean
+}
+
+export type CloneState = "omega" | "alpha" | "unknown"
+
+export type CharacterFlyability = {
+  characterId: number
+  characterName: string
+  canFly: boolean
+  missingSkills: SkillRequirement[]
+}

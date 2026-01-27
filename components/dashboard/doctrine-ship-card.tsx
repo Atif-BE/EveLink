@@ -4,12 +4,10 @@ import { useState, useTransition } from "react"
 import Image from "next/image"
 import { ChevronDown, ChevronUp, Trash2, Copy, Check, Upload, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type DoctrineShip, type ParsedFitting, type ShipRole } from "@/types"
 import { RoleBadge } from "@/components/eve/role-badge"
 import { FittingDisplay } from "./fitting-display"
 import { saveFittingToEve } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
-import type { DoctrineShip } from "@/types/db"
-import type { ParsedFitting, ShipRole } from "@/types/fitting"
 
 type DoctrineShipCardProps = {
   ship: DoctrineShip

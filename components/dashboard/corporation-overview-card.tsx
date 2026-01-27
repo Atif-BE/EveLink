@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Users, Percent, Crown } from "lucide-react"
-import type { CorporationDisplay } from "@/types/eve"
+import type { CorporationDisplay } from "@/types"
 
 type CorporationOverviewCardProps = {
   corporation: CorporationDisplay

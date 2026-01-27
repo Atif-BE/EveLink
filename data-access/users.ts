@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm"
 import { db } from "@/db"
 import { users } from "@/db/schema"
-import type { NewUser } from "@/types/db"
+import type { NewUser } from "@/types"
 
 export const createUser = async (data: Partial<NewUser> = {}) => {
   const [user] = await db.insert(users).values(data).returning()

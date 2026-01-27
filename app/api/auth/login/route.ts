@@ -1,8 +1,26 @@
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { generateState, getAuthorizationUrl } from "@/lib/eve-sso"
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
+
+const RATE_LIMIT = 10
+const WINDOW_MS = 60_000
 
 export async function GET() {
+  const headersList = await headers()
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0] ?? "unknown"
+  const result = rateLimit(`login:${ip}`, RATE_LIMIT, WINDOW_MS)
+
+  if (result.limited) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again later." },
+      {
+        status: 429,
+        headers: getRateLimitHeaders(result, RATE_LIMIT),
+      }
+    )
+  }
+
   const state = generateState()
   const cookieStore = await cookies()
 

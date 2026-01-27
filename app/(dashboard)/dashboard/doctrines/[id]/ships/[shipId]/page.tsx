@@ -6,11 +6,9 @@ import {
   getFittingSkillRequirements,
   checkCharacterCanFly,
   resolveFittingModuleTypeIds,
-  type SkillRequirement,
-  type CharacterFlyability,
 } from "@/lib/esi"
 import { ShipDetailView } from "@/components/dashboard/ship-detail-view"
-import type { ParsedFitting } from "@/types/fitting"
+import type { SkillRequirement, CharacterFlyability, ParsedFitting } from "@/types"
 
 type PageProps = {
   params: Promise<{ id: string; shipId: string }>

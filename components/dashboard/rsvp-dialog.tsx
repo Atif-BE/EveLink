@@ -20,13 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type FleetRsvp, type DoctrineShip, type RsvpStatus } from "@/types"
 import {
   rsvpToFleetAction,
   cancelRsvpAction,
 } from "@/app/(dashboard)/dashboard/fleets/[id]/actions"
-import type { FleetRsvp, DoctrineShip } from "@/types/db"
-import type { RsvpStatus } from "@/types/fleet"
 
 type RsvpDialogProps = {
   fleetId: string

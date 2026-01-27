@@ -1,7 +1,7 @@
 import { eq, and, desc } from "drizzle-orm"
 import { db } from "@/db"
 import { doctrines } from "@/db/schema"
-import type { NewDoctrine } from "@/types/db"
+import type { NewDoctrine } from "@/types"
 
 export const getDoctrinesByAllianceId = async (allianceId: number) => {
   return db.query.doctrines.findMany({

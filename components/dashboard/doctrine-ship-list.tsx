@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils"
 import { DoctrineShipRow } from "./doctrine-ship-row"
 import { reorderShips, removeShipAction } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
-import type { DoctrineShip } from "@/types/db"
+import type { DoctrineShip } from "@/types"
 
 type DoctrineShipListProps = {
   ships: DoctrineShip[]

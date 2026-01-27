@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { DoctrineShipList } from "./doctrine-ship-list"
 import { AddShipDialog } from "./add-ship-dialog"
 import { deleteDoctrineAction } from "@/app/(dashboard)/dashboard/doctrines/[id]/actions"
-import type { DoctrineWithShips } from "@/types/db"
+import type { DoctrineWithShips } from "@/types"
 
 type DoctrineDetailPanelProps = {
   doctrine: DoctrineWithShips

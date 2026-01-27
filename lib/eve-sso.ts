@@ -1,5 +1,5 @@
 import * as jose from "jose"
-import type { TokenResponse, JWTPayload } from "@/types/auth"
+import type { TokenResponse, JWTPayload } from "@/types"
 
 const EVE_SSO_BASE = "https://login.eveonline.com"
 const EVE_JWKS_URL = "https://login.eveonline.com/oauth/jwks"

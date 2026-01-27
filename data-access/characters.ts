@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm"
 import { db } from "@/db"
 import { characters } from "@/db/schema"
-import type { NewCharacter } from "@/types/db"
+import type { NewCharacter } from "@/types"
 
 export const getCharacterById = async (characterId: number) => {
   return db.query.characters.findFirst({

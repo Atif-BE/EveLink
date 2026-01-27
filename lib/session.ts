@@ -1,8 +1,8 @@
 import { getIronSession, SessionOptions } from "iron-session"
 import { cookies } from "next/headers"
-import type { SessionData } from "@/types/session"
+import type { SessionData } from "@/types"
 
-export type { SessionData } from "@/types/session"
+export type { SessionData } from "@/types"
 
 const defaultSession: SessionData = {
   isLoggedIn: false,

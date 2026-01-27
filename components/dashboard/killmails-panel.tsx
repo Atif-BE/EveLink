@@ -1,7 +1,7 @@
 import { Skull, Crosshair } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { KillmailItem } from "./killmail-item"
-import type { KillmailDisplay } from "@/types/eve"
+import type { KillmailDisplay } from "@/types"
 
 type KillmailsPanelProps = {
   kills: KillmailDisplay[]

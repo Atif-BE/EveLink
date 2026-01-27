@@ -1,17 +1,11 @@
-import type { ParsedFitting, FittingModule } from "@/types/fitting"
 import type {
+  ParsedFitting,
+  FittingModule,
   FitComparisonResult,
   FitValidationStatus,
   FitDifferences,
-} from "@/types/srp"
-
-export type KillmailItem = {
-  item_type_id: number
-  flag: number
-  quantity_destroyed?: number
-  quantity_dropped?: number
-  singleton?: number
-}
+  KillmailItem,
+} from "@/types"
 
 const ESI_SLOT_FLAGS = {
   LOW_START: 11,

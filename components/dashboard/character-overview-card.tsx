@@ -10,8 +10,7 @@ import { CloneStateBadge } from "@/components/eve/clone-state-badge"
 import { SkillTrainingDisplay } from "./skill-training-display"
 import { Button } from "@/components/ui/button"
 import { setMainCharacter } from "@/app/(dashboard)/dashboard/characters/actions"
-import type { CloneState } from "@/lib/esi"
-import type { CorporationDisplay, AllianceDisplay } from "@/types/eve"
+import type { CloneState, CorporationDisplay, AllianceDisplay } from "@/types"
 
 type CharacterOverviewData = {
   characterId: number

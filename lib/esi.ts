@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache"
 import type {
   CharacterInfo,
   CorporationInfo,
@@ -13,54 +14,37 @@ import type {
   CharacterSkillsResponse,
   SkillRequirement,
   SkillQueueEntry,
-} from "@/types/esi"
-import type { ParsedFitting } from "@/types/fitting"
-import type { KillmailDisplay } from "@/types/eve"
-import type { ZKillboardEntry } from "@/types/zkillboard"
+  AggregateWealth,
+  CloneState,
+  CharacterFlyability,
+  ParsedFitting,
+  KillmailDisplay,
+  ZKillboardEntry,
+} from "@/types"
 import { getCharactersByUserId } from "@/data-access"
 import { getValidAccessToken } from "@/lib/tokens"
 import { getCharacterKills, getCharacterLosses } from "@/lib/zkillboard"
 
-export type {
-  CharacterInfo,
-  CorporationInfo,
-  AllianceInfo,
-  CharacterAffiliation,
-  RaceInfo,
-  BloodlineInfo,
-  AncestryInfo,
-  KillmailRef,
-  Killmail,
-  UniverseType,
-  UniverseTypeWithSkills,
-  CharacterSkillsResponse,
-  SkillRequirement,
-  SkillQueueEntry,
-} from "@/types/esi"
-
-export type { KillmailDisplay } from "@/types/eve"
-
-export type CharacterWealth = {
-  characterId: number
-  characterName: string
-  balance: number | null
-}
-
-export type AggregateWealth = {
-  total: number
-  characters: CharacterWealth[]
-  incomplete: boolean
-}
-
 const ESI_BASE = "https://esi.evetech.net/latest"
 const USER_AGENT = `EveLink/0.1.0 (${process.env.EVE_CONTACT_EMAIL || "contact@example.com"})`
 
-async function fetchESI<T>(endpoint: string): Promise<T> {
+const CACHE_DURATIONS = {
+  STATIC: 3600,
+  CHARACTER_PUBLIC: 300,
+  KILLMAIL: 300,
+  TYPE: 3600,
+}
+
+async function fetchESI<T>(
+  endpoint: string,
+  revalidate: number = CACHE_DURATIONS.CHARACTER_PUBLIC
+): Promise<T> {
   const response = await fetch(`${ESI_BASE}${endpoint}`, {
     headers: {
       Accept: "application/json",
       "X-User-Agent": USER_AGENT,
     },
+    next: { revalidate },
   })
 
   if (!response.ok) {
@@ -74,19 +58,28 @@ async function fetchESI<T>(endpoint: string): Promise<T> {
 export async function getCharacterInfo(
   characterId: number
 ): Promise<CharacterInfo> {
-  return fetchESI<CharacterInfo>(`/characters/${characterId}/`)
+  return fetchESI<CharacterInfo>(
+    `/characters/${characterId}/`,
+    CACHE_DURATIONS.CHARACTER_PUBLIC
+  )
 }
 
 export async function getCorporationInfo(
   corporationId: number
 ): Promise<CorporationInfo> {
-  return fetchESI<CorporationInfo>(`/corporations/${corporationId}/`)
+  return fetchESI<CorporationInfo>(
+    `/corporations/${corporationId}/`,
+    CACHE_DURATIONS.CHARACTER_PUBLIC
+  )
 }
 
 export async function getAllianceInfo(
   allianceId: number
 ): Promise<AllianceInfo> {
-  return fetchESI<AllianceInfo>(`/alliances/${allianceId}/`)
+  return fetchESI<AllianceInfo>(
+    `/alliances/${allianceId}/`,
+    CACHE_DURATIONS.CHARACTER_PUBLIC
+  )
 }
 
 export async function getCharacterAffiliation(
@@ -111,27 +104,29 @@ export async function getCharacterAffiliation(
   return affiliations[0]
 }
 
-let racesCache: RaceInfo[] | null = null
-let bloodlinesCache: BloodlineInfo[] | null = null
-let ancestriesCache: AncestryInfo[] | null = null
+export const getRaces = unstable_cache(
+  async (): Promise<RaceInfo[]> => {
+    return fetchESI<RaceInfo[]>("/universe/races/", CACHE_DURATIONS.STATIC)
+  },
+  ["esi-races"],
+  { revalidate: CACHE_DURATIONS.STATIC, tags: ["esi", "esi-static"] }
+)
 
-export async function getRaces(): Promise<RaceInfo[]> {
-  if (racesCache) return racesCache
-  racesCache = await fetchESI<RaceInfo[]>("/universe/races/")
-  return racesCache
-}
+export const getBloodlines = unstable_cache(
+  async (): Promise<BloodlineInfo[]> => {
+    return fetchESI<BloodlineInfo[]>("/universe/bloodlines/", CACHE_DURATIONS.STATIC)
+  },
+  ["esi-bloodlines"],
+  { revalidate: CACHE_DURATIONS.STATIC, tags: ["esi", "esi-static"] }
+)
 
-export async function getBloodlines(): Promise<BloodlineInfo[]> {
-  if (bloodlinesCache) return bloodlinesCache
-  bloodlinesCache = await fetchESI<BloodlineInfo[]>("/universe/bloodlines/")
-  return bloodlinesCache
-}
-
-export async function getAncestries(): Promise<AncestryInfo[]> {
-  if (ancestriesCache) return ancestriesCache
-  ancestriesCache = await fetchESI<AncestryInfo[]>("/universe/ancestries/")
-  return ancestriesCache
-}
+export const getAncestries = unstable_cache(
+  async (): Promise<AncestryInfo[]> => {
+    return fetchESI<AncestryInfo[]>("/universe/ancestries/", CACHE_DURATIONS.STATIC)
+  },
+  ["esi-ancestries"],
+  { revalidate: CACHE_DURATIONS.STATIC, tags: ["esi", "esi-static"] }
+)
 
 export async function getRaceById(raceId: number): Promise<RaceInfo | undefined> {
   const races = await getRaces()
@@ -251,20 +246,24 @@ export async function getAggregateWealth(
   return { total, characters: results, incomplete }
 }
 
-const typeNameCache = new Map<number, string>()
+const getCachedTypeName = unstable_cache(
+  async (typeId: number): Promise<string> => {
+    try {
+      const typeInfo = await fetchESI<UniverseType>(
+        `/universe/types/${typeId}/`,
+        CACHE_DURATIONS.TYPE
+      )
+      return typeInfo.name
+    } catch {
+      return "Unknown Ship"
+    }
+  },
+  ["esi-type-name"],
+  { revalidate: CACHE_DURATIONS.TYPE, tags: ["esi", "esi-types"] }
+)
 
-export async function getTypeName(typeId: number): Promise<string> {
-  if (typeNameCache.has(typeId)) {
-    return typeNameCache.get(typeId)!
-  }
-
-  try {
-    const typeInfo = await fetchESI<UniverseType>(`/universe/types/${typeId}/`)
-    typeNameCache.set(typeId, typeInfo.name)
-    return typeInfo.name
-  } catch {
-    return "Unknown Ship"
-  }
+export const getTypeName = (typeId: number): Promise<string> => {
+  return getCachedTypeName(typeId)
 }
 
 export async function getCharacterKillmails(
@@ -281,7 +280,10 @@ export async function getKillmailDetails(
   killmailId: number,
   hash: string
 ): Promise<Killmail> {
-  return fetchESI<Killmail>(`/killmails/${killmailId}/${hash}/`)
+  return fetchESI<Killmail>(
+    `/killmails/${killmailId}/${hash}/`,
+    CACHE_DURATIONS.KILLMAIL
+  )
 }
 
 export type AggregateKillmails = {
@@ -521,41 +523,54 @@ const SKILL_ATTRIBUTE_IDS = {
   requiredSkill6Level: 1288,
 }
 
-export const getTypeWithSkills = async (
+const getCachedTypeWithSkills = unstable_cache(
+  async (typeId: number): Promise<UniverseTypeWithSkills | null> => {
+    try {
+      const response = await fetch(
+        `${ESI_BASE}/universe/types/${typeId}/?datasource=tranquility`,
+        {
+          headers: {
+            Accept: "application/json",
+            "X-User-Agent": USER_AGENT,
+          },
+          next: { revalidate: CACHE_DURATIONS.TYPE },
+        }
+      )
+
+      if (!response.ok) return null
+      return response.json()
+    } catch {
+      return null
+    }
+  },
+  ["esi-type-with-skills"],
+  { revalidate: CACHE_DURATIONS.TYPE, tags: ["esi", "esi-types"] }
+)
+
+export const getTypeWithSkills = (
   typeId: number
 ): Promise<UniverseTypeWithSkills | null> => {
-  try {
-    const response = await fetch(
-      `${ESI_BASE}/universe/types/${typeId}/?datasource=tranquility`,
-      {
-        headers: {
-          Accept: "application/json",
-          "X-User-Agent": USER_AGENT,
-        },
-      }
-    )
-
-    if (!response.ok) return null
-    return response.json()
-  } catch {
-    return null
-  }
+  return getCachedTypeWithSkills(typeId)
 }
 
-const skillNameCache = new Map<number, string>()
+const getCachedSkillName = unstable_cache(
+  async (skillId: number): Promise<string> => {
+    try {
+      const typeInfo = await fetchESI<UniverseType>(
+        `/universe/types/${skillId}/`,
+        CACHE_DURATIONS.TYPE
+      )
+      return typeInfo.name
+    } catch {
+      return `Unknown Skill (${skillId})`
+    }
+  },
+  ["esi-skill-name"],
+  { revalidate: CACHE_DURATIONS.TYPE, tags: ["esi", "esi-types"] }
+)
 
-const getSkillName = async (skillId: number): Promise<string> => {
-  if (skillNameCache.has(skillId)) {
-    return skillNameCache.get(skillId)!
-  }
-
-  try {
-    const typeInfo = await fetchESI<UniverseType>(`/universe/types/${skillId}/`)
-    skillNameCache.set(skillId, typeInfo.name)
-    return typeInfo.name
-  } catch {
-    return `Unknown Skill (${skillId})`
-  }
+const getSkillName = (skillId: number): Promise<string> => {
+  return getCachedSkillName(skillId)
 }
 
 const extractSkillRequirements = (
@@ -613,8 +628,6 @@ export const getCharacterSkillQueue = async (
     return []
   }
 }
-
-export type CloneState = "omega" | "alpha" | "unknown"
 
 export const inferCloneState = (skillQueue: SkillQueueEntry[]): CloneState => {
   if (skillQueue.length === 0) return "unknown"
@@ -680,13 +693,6 @@ export const getFittingSkillRequirements = async (
   })
 
   return requirements
-}
-
-export type CharacterFlyability = {
-  characterId: number
-  characterName: string
-  canFly: boolean
-  missingSkills: SkillRequirement[]
 }
 
 export const checkCharacterCanFly = async (

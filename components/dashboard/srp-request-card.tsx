@@ -5,11 +5,15 @@ import Image from "next/image"
 import { Calendar, ExternalLink, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import {
+  eveImageUrl,
+  type SrpRequestWithFleet,
+  type SrpRequestStatus,
+  type FitValidationStatus,
+  type FitDifferences,
+} from "@/types"
 import { SrpStatusBadge } from "./srp-status-badge"
 import { FitValidationBadge } from "./fit-validation-badge"
-import type { SrpRequestWithFleet } from "@/types/db"
-import type { SrpRequestStatus, FitValidationStatus, FitDifferences } from "@/types/srp"
 
 type SrpRequestCardProps = {
   request: SrpRequestWithFleet

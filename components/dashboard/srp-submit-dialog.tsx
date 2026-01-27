@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type EligibleLoss } from "@/types"
 import { submitSrpRequestAction } from "@/app/(dashboard)/dashboard/srp/actions"
-import type { EligibleLoss } from "@/types/srp"
 
 type SrpSubmitDialogProps = {
   loss: EligibleLoss | null

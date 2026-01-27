@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { SrpRequestStatus } from "@/types/srp"
+import type { SrpRequestStatus } from "@/types"
 
 type SrpStatusBadgeProps = {
   status: SrpRequestStatus

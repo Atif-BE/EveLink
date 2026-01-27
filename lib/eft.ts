@@ -1,4 +1,4 @@
-import type { FittingModule, ParsedFitting, ESIFitting, ESIFittingItem } from "@/types/fitting"
+import type { FittingModule, ParsedFitting, ESIFitting, ESIFittingItem } from "@/types"
 
 const parseSection = (lines: string[]): FittingModule[] => {
   const moduleMap = new Map<string, number>()

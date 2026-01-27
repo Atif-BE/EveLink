@@ -1,4 +1,4 @@
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { getSession } from "@/lib/session"
@@ -11,8 +11,26 @@ import {
   updateCharacterTokens,
   updateCharacterInfo,
 } from "@/data-access"
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
+
+const RATE_LIMIT = 20
+const WINDOW_MS = 60_000
 
 export async function GET(request: NextRequest) {
+  const headersList = await headers()
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0] ?? "unknown"
+  const result = rateLimit(`callback:${ip}`, RATE_LIMIT, WINDOW_MS)
+
+  if (result.limited) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: getRateLimitHeaders(result, RATE_LIMIT),
+      }
+    )
+  }
+
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get("code")
   const state = searchParams.get("state")

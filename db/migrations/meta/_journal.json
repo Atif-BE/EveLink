@@ -29,6 +29,13 @@
       "when": 1769284788396,
       "tag": "0003_quiet_ken_ellis",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769445728723,
+      "tag": "0004_fearless_preak",
+      "breakpoints": true
     }
   ]
 }

@@ -2,10 +2,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { Ship, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type DoctrineWithShips, type ShipRole } from "@/types"
 import { RoleBadge } from "@/components/eve/role-badge"
-import type { DoctrineWithShips } from "@/types/db"
-import type { ShipRole } from "@/types/fitting"
 
 type DoctrineCardProps = {
   doctrine: DoctrineWithShips

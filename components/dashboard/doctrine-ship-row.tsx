@@ -6,10 +6,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { GripVertical, Trash2, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl, type DoctrineShip, type ShipRole } from "@/types"
 import { RoleBadge } from "@/components/eve/role-badge"
-import type { DoctrineShip } from "@/types/db"
-import type { ShipRole } from "@/types/fitting"
 
 type DoctrineShipRowProps = {
   ship: DoctrineShip

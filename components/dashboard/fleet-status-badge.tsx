@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { FleetStatus } from "@/types/fleet"
+import type { FleetStatus } from "@/types"
 
 type FleetStatusBadgeProps = {
   status: FleetStatus

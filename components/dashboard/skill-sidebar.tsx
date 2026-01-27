@@ -1,8 +1,8 @@
 import Image from "next/image"
 import { Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
-import type { SkillRequirement, CharacterFlyability } from "@/lib/esi"
+import { eveImageUrl } from "@/types"
+import type { SkillRequirement, CharacterFlyability } from "@/types"
 
 type SkillSidebarProps = {
   skillRequirements: SkillRequirement[]

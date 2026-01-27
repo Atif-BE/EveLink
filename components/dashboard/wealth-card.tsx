@@ -4,9 +4,9 @@ import { useState } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatISK } from "@/lib/format"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl } from "@/types"
 import { Wallet, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react"
-import type { AggregateWealth } from "@/lib/esi"
+import type { AggregateWealth } from "@/types"
 
 type WealthCardProps = {
   wealth: AggregateWealth

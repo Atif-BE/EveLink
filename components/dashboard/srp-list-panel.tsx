@@ -9,9 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SrpRequestCard } from "./srp-request-card"
 import { EligibleLossCard } from "./eligible-loss-card"
 import { SrpSubmitDialog } from "./srp-submit-dialog"
-import type { SrpRequestWithFleet, FleetWithRelations } from "@/types/db"
-import type { EligibleLoss } from "@/types/srp"
-import type { ZKillboardEntry } from "@/types/zkillboard"
+import type { SrpRequestWithFleet, FleetWithRelations, EligibleLoss, ZKillboardEntry } from "@/types"
 
 type SrpListPanelProps = {
   srpRequests: SrpRequestWithFleet[]

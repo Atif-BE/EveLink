@@ -7,7 +7,7 @@ import { getDoctrineById, addShipToDoctrine, getCharacterById, updateShipPriorit
 import { parseEft, convertToESIFitting } from "@/lib/eft"
 import { getTypeIdByName, postESIAuth } from "@/lib/esi"
 import { getValidAccessToken } from "@/lib/tokens"
-import { SHIP_ROLES, type ShipRole, type ParsedFitting } from "@/types/fitting"
+import { SHIP_ROLES, type ShipRole, type ParsedFitting } from "@/types"
 
 export type ActionResult = {
   success: boolean

@@ -1,8 +1,7 @@
 import { eq, and, desc, inArray } from "drizzle-orm"
 import { db } from "@/db"
 import { fleets } from "@/db/schema"
-import type { NewFleet } from "@/types/db"
-import type { FleetStatus } from "@/types/fleet"
+import type { NewFleet, FleetStatus } from "@/types"
 
 export const getFleetsByAllianceId = async (allianceId: number) => {
   return db.query.fleets.findMany({

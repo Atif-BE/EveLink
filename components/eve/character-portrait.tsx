@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { eveImageUrl } from "@/types/eve"
+import { eveImageUrl } from "@/types"
 
 type CharacterPortraitProps = {
   characterId: number
