@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/session"
-import { getCharacterById } from "@/data-access"
+import { getCharacterById, getAllianceRegistration } from "@/data-access"
 import { getCharacterAffiliation } from "@/lib/esi"
 
 export async function POST(request: NextRequest) {
@@ -25,10 +25,28 @@ export async function POST(request: NextRequest) {
 
   const affiliation = await getCharacterAffiliation(characterId)
 
+  const newAllianceId = affiliation.alliance_id ?? null
+
+  if (!process.env.ALLIANCE_ID && newAllianceId) {
+    const registration = await getAllianceRegistration(newAllianceId)
+    if (!registration) {
+      return NextResponse.json(
+        { error: "That character's alliance is not registered on EveLink" },
+        { status: 403 }
+      )
+    }
+    session.isAllianceAdmin = character.id === registration.registeredById
+  } else if (!process.env.ALLIANCE_ID) {
+    return NextResponse.json(
+      { error: "That character is not in an alliance" },
+      { status: 403 }
+    )
+  }
+
   session.characterId = character.id
   session.characterName = character.name
   session.corporationId = affiliation.corporation_id
-  session.allianceId = affiliation.alliance_id ?? null
+  session.allianceId = newAllianceId
   session.accessToken = character.accessToken
   session.refreshToken = character.refreshToken
   session.expiresAt = character.tokenExpiresAt.getTime()

@@ -1,5 +1,6 @@
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm"
 import type {
+  alliances,
   users,
   characters,
   doctrines,
@@ -8,6 +9,9 @@ import type {
   fleetRsvps,
   srpRequests,
 } from "@/db/schema"
+
+export type Alliance = InferSelectModel<typeof alliances>
+export type NewAlliance = InferInsertModel<typeof alliances>
 
 export type User = InferSelectModel<typeof users>
 export type NewUser = InferInsertModel<typeof users>

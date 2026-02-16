@@ -45,6 +45,8 @@ export type {
 export { SHIP_ROLES } from "./fitting"
 
 export type {
+  Alliance,
+  NewAlliance,
   User,
   NewUser,
   Character,

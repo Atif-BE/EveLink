@@ -10,6 +10,7 @@ import {
   createCharacter,
   updateCharacterTokens,
   updateCharacterInfo,
+  getAllianceRegistration,
 } from "@/data-access"
 import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
 
@@ -61,9 +62,20 @@ export async function GET(request: NextRequest) {
     ])
 
     const requiredAllianceId = parseInt(process.env.ALLIANCE_ID || "0", 10)
+    let isAllianceAdmin = false
 
-    if (requiredAllianceId && affiliation.alliance_id !== requiredAllianceId) {
-      return NextResponse.redirect(`${baseUrl}/login?error=not_member`)
+    if (requiredAllianceId) {
+      if (affiliation.alliance_id !== requiredAllianceId) {
+        return NextResponse.redirect(`${baseUrl}/login?error=not_member`)
+      }
+    } else {
+      if (!affiliation.alliance_id) {
+        return NextResponse.redirect(`${baseUrl}/login?error=no_alliance`)
+      }
+      const registration = await getAllianceRegistration(affiliation.alliance_id)
+      if (registration) {
+        isAllianceAdmin = characterId === registration.registeredById
+      }
     }
 
     const session = await getSession()
@@ -131,6 +143,7 @@ export async function GET(request: NextRequest) {
     session.accessToken = tokens.access_token
     session.refreshToken = tokens.refresh_token
     session.expiresAt = Date.now() + tokens.expires_in * 1000
+    session.isAllianceAdmin = isAllianceAdmin
 
     await session.save()
 

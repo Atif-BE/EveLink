@@ -14,6 +14,7 @@ const defaultSession: SessionData = {
   accessToken: "",
   refreshToken: "",
   expiresAt: 0,
+  isAllianceAdmin: false,
 }
 
 export const sessionOptions: SessionOptions = {

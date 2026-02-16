@@ -1,7 +1,6 @@
 "use client"
 
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
+import { useSortable } from "@dnd-kit/react/sortable"
 import Image from "next/image"
 import Link from "next/link"
 import { GripVertical, Trash2, Loader2 } from "lucide-react"
@@ -11,6 +10,7 @@ import { RoleBadge } from "@/components/eve/role-badge"
 
 type DoctrineShipRowProps = {
   ship: DoctrineShip
+  index: number
   doctrineId: string
   onDelete?: (shipId: string) => void
   isDeleting?: boolean
@@ -19,42 +19,26 @@ type DoctrineShipRowProps = {
 
 export const DoctrineShipRow = ({
   ship,
+  index,
   doctrineId,
   onDelete,
   isDeleting,
   className,
 }: DoctrineShipRowProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: ship.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
+  const { ref, isDragging } = useSortable({ id: ship.id, index })
 
   return (
     <div
-      ref={setNodeRef}
-      style={style}
+      ref={ref}
       className={cn(
         "group flex items-center gap-3 rounded-lg border border-eve-border bg-eve-deep p-3 transition-all",
         isDragging && "z-50 border-eve-cyan/50 bg-eve-deep/90 shadow-lg shadow-eve-cyan/10",
         className
       )}
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="cursor-grab touch-none text-eve-text-muted/50 transition-colors hover:text-eve-text-muted active:cursor-grabbing"
-      >
+      <div className="cursor-grab touch-none text-eve-text-muted/50 transition-colors hover:text-eve-text-muted active:cursor-grabbing">
         <GripVertical className="h-4 w-4" />
-      </button>
+      </div>
 
       <Link
         href={`/dashboard/doctrines/${doctrineId}/ships/${ship.id}`}

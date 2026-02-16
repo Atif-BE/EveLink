@@ -1,3 +1,5 @@
+export { getAllianceRegistration, registerAlliance } from "./alliances"
+
 export {
   createUser,
   getUserById,

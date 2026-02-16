@@ -12,6 +12,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_member: "Your character is not in the required alliance",
   sso_failed: "Eve Online authentication failed. Please try again.",
   invalid_state: "Session expired. Please try again.",
+  no_alliance:
+    "Your character must be in an alliance to use EveLink.",
+  alliance_not_registered:
+    "Your alliance hasn't been set up on EveLink yet. Ask your executor corp CEO to register it.",
 }
 
 function LoginContent() {

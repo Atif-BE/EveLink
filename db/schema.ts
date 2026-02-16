@@ -11,6 +11,16 @@ import {
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
+export const alliances = pgTable("alliances", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
+  ticker: text("ticker").notNull(),
+  executorCorpId: integer("executor_corp_id").notNull(),
+  registeredById: integer("registered_by_id").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  registeredAt: timestamp("registered_at").defaultNow().notNull(),
+})
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   primaryCharacterId: integer("primary_character_id"),
@@ -46,6 +56,8 @@ export const characters = pgTable(
   },
   (table) => [index("characters_user_id_idx").on(table.userId)]
 )
+
+export const alliancesRelations = relations(alliances, () => ({}))
 
 export const usersRelations = relations(users, ({ many }) => ({
   characters: many(characters),

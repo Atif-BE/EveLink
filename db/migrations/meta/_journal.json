@@ -36,6 +36,13 @@
       "when": 1769445728723,
       "tag": "0004_fearless_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771200371124,
+      "tag": "0005_last_malcolm_colcord",
+      "breakpoints": true
     }
   ]
 }
